@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <meta http-equiv="refresh" content="30" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+['ppm', 'Lok A', 'Lok B', 'Srednia', 'Mean +std', 'Mean -std'],
+          ['54',  1000,      400,  1050,  1136,  964],
+          ['55',  1070,      360,  1050,  1136,  964],
+          ['56',  960,       420,  1050,  1136,  964],
+          ['57',  1000,      400,  1050,  1136,  964],
+          ['58',  1070,      460,  1050,  1136,  964],
+          ['59',  990,       420,  1050,  1136,  964],
+          ['60',  1000,      450,  1050,  1136,  964],
+          ['1',  1100,      560,  1050,  1136,  964],
+          ['2',  1260,       520,  1050,  1136,  964],
+          ['3',  1430,      540,  1050,  1136,  964]
+        ]);
+
+        var options = {
+        hAxis: {
+          title: 'Timestamp'
+        },
+        vAxis: {
+          title: 'ppm'
+        },
+          title: 'Stezenie metanu',
+          curveType: 'function',
+          colors: ['#a52714', '#097138', '#353156', '#888888', '#888888'],
+          legend: { position: 'bottom' }
+        };
+        var data2 = google.visualization.arrayToDataTable([
+          ['Stopni Celciusza', 'Lokalizacja A', 'Lokaliacja B'],
+          ['54',  10.5,      4.0],
+          ['55',  10.7,      3.6],
+          ['56',  9.9,       4.2],
+          ['57',  10.0,      4.0],
+          ['58',  10.0,      4.0],
+          ['59',  9.3,       4.0],
+          ['60',  8.5,      4.5],
+          ['1',  8.30,      5.0],
+          ['2',  8.60,       5.1],
+          ['3',  9.30,      5.4]
+        ]);
+
+        var options2 = {
+        hAxis: {
+          title: 'Timestamp'
+        },
+        vAxis: {
+          title: 'Stopni Celciusza'
+        },
+          title: 'Temperatura',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        var chart2 = new google.visualization.LineChart(document.getElementById('curve_chart2'));
+
+        chart.draw(data, options);
+        chart2.draw(data2, options2);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id="curve_chart2" style="width: 900px; height: 500px"></div>
+  </body>
+</html>

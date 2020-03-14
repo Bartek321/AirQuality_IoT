@@ -21,7 +21,7 @@ class SensorConnectionHandler(object):
 
     def new_client(self, sock, addr):
             txt = sock.recv(1024)
-            print ('Data received from: ' + str(addr) + ':\t' + txt)
+            print ('Data received from sensor: ' + str(addr) + ':\t' + txt)
 #            process_data(txt)
             sock.send('ACK')
             sock.close()
@@ -45,7 +45,7 @@ class SensorConnectionHandler(object):
             while True:
                 c, addr = wrapped_socket.accept()
 
-                print "Connection from: ", addr
+                print "Connection from sensor: ", addr
                 thread.start_new_thread(self.new_client, (c, addr))
 
         except SSLError:

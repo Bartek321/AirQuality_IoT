@@ -3,7 +3,7 @@ import ssl
 from ssl import SSLError
 
 ip = '127.0.0.1'
-port = 5001
+port = 5002
 data_to_send = 'datadatadata'
 
 

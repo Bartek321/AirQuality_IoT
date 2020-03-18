@@ -3,11 +3,11 @@ import psycopg2
 
 class Database:
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        self.name = "iot"
         self.host = "localhost"
-        self.user = "grupa04"
-        self.password = "grupa04"
+        self.user = "postgres"
+        self.password = "grupa_4"
         #self.cur = self.connect()  # object to react with database
         # connection to database
 
@@ -22,21 +22,39 @@ class Database:
                                     password=self.password)
             # create a cursor to refer to database
             cur = conn.cursor()
-            return cur
+            return conn, cur
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-    def close_connection(self, cur):
+    def close_connection(self, conn, cur):
         try:
             cur.close()
+            conn.close()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
     def query(self):
-        self.cur.execute('SELECT version()')
+        conn, cur = self.connect()
+        cur.execute('SELECT version()')
+        version = cur.fetchone()[0]
+        print(version)
+        self.close_connection(conn, cur)
 
     def get_rows(self):
-        pass
+        conn, cur = self.connect()
+        cur.execute('SELECT * FROM sensor;')
+        result = cur.fetchone()
+        while result is not None:
+            print(result)
+            result = cur.fetchone()
+        self.close_connection(conn, cur)
+
+    def insert_example_row(self):
+        conn, cur = self.connect()
+        cur.execute("insert into sensor (id,name,description,location,status) values (101,'test','test101','krakow',false);")
+        conn.commit()
+        self.close_connection(conn, cur)
+        
 
     def insert_measurement(self, sensor_id, measurement_type_id, start_time, stop_time, value):
         '''Insert new measurement result into database
@@ -116,3 +134,9 @@ class Database:
 
     def write_to_database(self):
         pass
+
+database = Database()
+database.query()
+database.get_rows()
+database.insert_example_row()
+database.get_rows()

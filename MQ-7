@@ -1,0 +1,18 @@
+const int AOUTpin=0;
+const int DOUTpin=8;
+
+int value;
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("testowanie czujnika MQ-7");
+  pinMode(DOUTpin, INPUT);
+}
+
+void loop()
+{
+  value= analogRead(AOUTpin);
+  Serial.print("CO value: ");
+  Serial.println(value);
+  delay(300);
+}

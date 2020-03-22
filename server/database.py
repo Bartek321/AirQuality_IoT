@@ -132,11 +132,133 @@ class Database:
         :return: Returns measurement_id, location and status of requested sensor
         '''
 
+#jm
+    def get_sensors_by_status(self, status):
+       '''
+        :param status: true if sensor is turned on or false if sensor is turned off 
+         Returns list of turned on/off sensors
+       '''
+       conn, cur = self.connect()
+       query="SELECT * FROM sensor WHERE status=%s;"
+       cur.execute(query,[status])
+       result=cur.fetchall()
+       for row in result:
+         print(row)
+       self.close_connection(conn,cur)
+       return result
+ 
+    
+    def get_sensors_by_location(self, location):
+       '''
+         Returns list of sensors mounted in one place
+       '''
+       conn, cur = self.connect()
+       query="SELECT * FROM sensor WHERE location=%s;"
+       cur.execute(query,[location])
+       result=cur.fetchall()
+       for row in result:
+          print(row)
+       self.close_connection(conn,cur)
+       return result
+
+    
+    def get_sensors_limit_values(self):
+       '''
+        Returns list of sensors and their limit values
+       '''
+       conn, cur = self.connect()
+       query="SELECT (id,name,limit_value) FROM sensor;"
+       cur.execute(query)
+       result=cur.fetchall()
+       for row in result:
+          print(row)
+       self.close_connection(conn,cur)
+       return result
+
+    
+    def get_sensor_measurements(self,sensor_id):
+       '''
+       Returns list of measurements from one sensor with defined sensor_id
+       '''
+       conn, cur = self.connect()
+       query="SELECT value FROM measurement WHERE sensor_id=%s;"
+       cur.execute(query,[sensor_id])
+       result=cur.fetchall()
+       for row in result:
+          print(row)
+       self.close_connection(conn,cur)
+       return result
+
+    
+    def get_sensor_measurements_from_time_period(self,sensor_id,startTime,stopTime):
+       '''
+        Returns list of measurements from one sensor and defined period of time
+       '''
+       conn, cur = self.connect()
+       query="SELECT value FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
+       cur.execute(query,[sensor_id,startTime,stopTime])
+       result=cur.fetchall()
+       for row in result:
+          print(row)
+       self.close_connection(conn,cur)
+       return result
+
+    
+    def get_average(self,sensor_id,startTime,stopTime):
+      '''
+      Returns average from measurements gathered from startTime to stopTime from one sensor
+      '''
+      conn, cur = self.connect()
+      query="SELECT avg(value) FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
+      cur.execute(query,[sensor_id,startTime,stopTime])
+      result=cur.fetchall()
+      for row in result:
+         print(row)
+      self.close_connection(conn,cur)
+      return result
+
+
+    
+    def get_sensor_and_measurement_types(self,sensor_id):
+      '''
+      Returns sensor_id with its measurement types
+      '''
+      conn, cur=self.connect()
+      conn, cur2=self.connect()
+      query="SELECT (name,unit) FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
+      cur.execute(query,[sensor_id])
+      result=cur.fetchall()
+      for row in result:
+         print(sensor_id,row)
+      self.close_connection(conn,cur)
+      return result
+    
+
+    def update_sensor_limit(self,new_limit_value,sensor_id):
+      '''
+      Update limit value for the sensor
+      '''
+      conn, cur=self.connect()
+      query="UPDATE sensor SET limit_value=%s WHERE id=%s;"
+      cur.execute(query,[new_limit_value,sensor_id])
+      conn.commit()
+      self.close_connection(conn,cur)
+
+    
     def write_to_database(self):
         pass
 
 database = Database()
 database.query()
-database.get_rows()
-database.insert_example_row()
-database.get_rows()
+#database.update_sensor_limit(30,1)
+#database.get_sensor_and_measurement_types(1)
+#database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
+#database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
+#database.get_sensor_measurements(1)
+#database.get_sensors_limit_values()
+#database.get_sensors_by_status('true')
+#database.get_sensors_by_location('ZPL14 2.12')
+
+#database.get_rows()
+#database.insert_example_row()
+#database.get_rows()

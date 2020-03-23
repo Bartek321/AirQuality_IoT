@@ -9,10 +9,10 @@ class RequestHandler(object):
         self.result = None
         self.database = Database()
         deserialized_data = self.deserialize_data(request)
-        if deserialized_data is not "NOT_JSON":
+        if deserialized_data is  "NOT_JSON":
             self.result =  "NOT_JSON"
         else:
-             self.result = self.handle_request(request)
+             self.result = self.handle_request(deserialized_data)
 
 
 
@@ -37,8 +37,8 @@ class RequestHandler(object):
         self.result = {}
         measurements_list = []
         measurements = self.database.get_sensor_measurements_from_time_period(request["sensor_id"],
-                                                               datetime.strptime(request["timestamp_start"]),
-                                                               datetime.strptime(request["timestamp_end"]))
+                                                               datetime.strptime(request["timestamp_start"], '%Y-%m-%d %H:%M:%S.%f'),
+                                                               datetime.strptime(request["timestamp_end"], '%Y-%m-%d %H:%M:%S.%f'))
         for measurement in measurements:
             value = measurement[0]
             timestamp = measurement[1]
@@ -54,9 +54,9 @@ class RequestHandler(object):
 
 json_data = '''{
 	"json_id": "2",
-	"timestamp_start": "2019-08-20T18:32:57.100Z",
-	"timestamp_end": "2019-08-20T18:32:57.300Z",
-    "sensor_id"": 1
+	"timestamp_start": "2019-08-20 18:32:57.100",
+	"timestamp_end": "2019-08-20 18:32:57.300",
+    "sensor_id": 1
      }'''
 
 rh = RequestHandler(json_data)

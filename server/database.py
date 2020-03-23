@@ -233,6 +233,20 @@ class Database(object):
       self.close_connection(conn,cur)
       return result
     
+    def get_n_measurements_from_sensor(self,sensor_id,n):
+      '''
+      Returns last n measurements from sensor
+      '''
+      conn, cur=self.connect()
+      query="SELECT value FROM measurement WHERE sensor_id=%s ORDER BY time DESC LIMIT %s;"
+      cur.execute(query,[sensor_id,n])
+      result=cur.fetchall()
+      for row in result:
+         print(row)
+      self.close_connection(conn,cur)
+      return result
+
+    
 
     def update_sensor_limit(self,new_limit_value,sensor_id):
       '''
@@ -244,12 +258,23 @@ class Database(object):
       conn.commit()
       self.close_connection(conn,cur)
 
+    def update_sensor_location(self,new_location,sensor_id):
+      '''
+      Update location of the sensor
+      '''
+      conn, cur=self.connect()
+      query="UPDATE sensor SET location=%s WHERE id=%s;"
+      cur.execute(query,[new_location,sensor_id])
+      conn.commit()
+      self.close_connection(conn,cur)    
     
     def write_to_database(self):
         pass
 
 database = Database()
 database.query()
+database.get_n_measurements_from_sensor(1,2)
+#database.update_sensor_location('abc',1)
 #database.update_sensor_limit(30,1)
 #database.get_sensor_and_measurement_types(1)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')

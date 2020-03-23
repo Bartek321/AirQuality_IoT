@@ -12,7 +12,7 @@ class RequestHandler(object):
         if deserialized_data is  "NOT_JSON":
             self.result =  "NOT_JSON"
         else:
-             self.result = self.handle_request(deserialized_data)
+            self.handle_request(deserialized_data)
 
 
 
@@ -36,20 +36,23 @@ class RequestHandler(object):
     def time_based_measurements(self, request):
         self.result = {}
         measurements_list = []
+        measurements_list_per_sensor = []
         measurements = self.database.get_sensor_measurements_from_time_period(request["sensor_id"],
-                                                               datetime.strptime(request["timestamp_start"], '%Y-%m-%d %H:%M:%S.%f'),
-                                                               datetime.strptime(request["timestamp_end"], '%Y-%m-%d %H:%M:%S.%f'))
+                                                                              request["timestamp_start"],
+                                                                              request["timestamp_end"])
         for measurement in measurements:
             value = measurement[0]
-            timestamp = measurement[1]
-            measurements_list.append(dict({"value": value, "timestamp": timestamp}))
+            timestamp = str(measurement[1])
+            measurements_list.append({"value": value, "timestamp": timestamp})
 
-        #Building response
+        dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
+        measurements_list_per_sensor.append(dict_inside)
+        # Building response
         self.result["json_id"] = request["json_id"]
         self.result["timestamp_start"] = request["timestamp_start"]
         self.result["timestamp_end"] = request["timestamp_end"]
-        self.result["result"] = list(dict({"sensor_id": request["sensor_id"], "data": measurements_list}))
-
+        self.result["result"] = measurements_list_per_sensor
+        print(json.dumps(self.result))
 
 
 json_data = '''{

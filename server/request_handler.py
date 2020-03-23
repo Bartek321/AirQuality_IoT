@@ -27,7 +27,7 @@ class RequestHandler(object):
         if request["json_id"] == "1":
             pass
         elif request["json_id"] == "2":
-            pass
+            self.time_based_measurements(request)
         elif request["json_id"] == "3":
             pass
         else:

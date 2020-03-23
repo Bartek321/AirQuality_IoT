@@ -1,7 +1,7 @@
 import psycopg2
 
 
-class Database:
+class Database(object):
 
     def __init__(self):
         self.name = "iot"
@@ -195,7 +195,7 @@ class Database:
         Returns list of measurements from one sensor and defined period of time
        '''
        conn, cur = self.connect()
-       query="SELECT value FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
+       query="SELECT value, time FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
        cur.execute(query,[sensor_id,startTime,stopTime])
        result=cur.fetchall()
        for row in result:

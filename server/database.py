@@ -167,7 +167,7 @@ class Database(object):
         Returns list of sensors and their limit values
        '''
        conn, cur = self.connect()
-       query="SELECT (id,name,limit_value) FROM sensor;"
+       query="SELECT id,name,limit_value FROM sensor;"
        cur.execute(query)
        result=cur.fetchall()
        for row in result:
@@ -225,7 +225,7 @@ class Database(object):
       '''
       conn, cur=self.connect()
       conn, cur2=self.connect()
-      query="SELECT (name,unit) FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
+      query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
       cur.execute(query,[sensor_id])
       result=cur.fetchall()
       for row in result:
@@ -238,7 +238,7 @@ class Database(object):
       Returns last n measurements from sensor
       '''
       conn, cur=self.connect()
-      query="SELECT value FROM measurement WHERE sensor_id=%s ORDER BY time DESC LIMIT %s;"
+      query="SELECT value, time FROM measurement WHERE sensor_id=%s ORDER BY time DESC LIMIT %s;"
       cur.execute(query,[sensor_id,n])
       result=cur.fetchall()
       for row in result:

@@ -6,8 +6,8 @@ class Database(object):
     def __init__(self):
         self.name = "iot"
         self.host = "localhost"
-        self.user = "postgres"
-        self.password = "grupa_4"
+        self.user = "iot2020"
+        self.password = "iot2020pass"
         #self.cur = self.connect()  # object to react with database
         # connection to database
 
@@ -248,23 +248,34 @@ class Database(object):
 
     
 
-    def update_sensor_limit(self,new_limit_value,sensor_id):
+    def update_sensor_max_limit(self,new_limit_value,sensor_id):
       '''
-      Update limit value for the sensor
+      Update max limit value for the sensor
       '''
       conn, cur=self.connect()
-      query="UPDATE sensor SET limit_value=%s WHERE id=%s;"
+      query="UPDATE sensor SET limit_max=%s WHERE id=%s;"
       cur.execute(query,[new_limit_value,sensor_id])
       conn.commit()
       self.close_connection(conn,cur)
 
-    def update_sensor_location(self,new_location,sensor_id):
+
+    def update_sensor_min_limit(self,new_limit_value,sensor_id):
+      '''
+      Update min limit value for the sensor
+      '''
+      conn, cur=self.connect()
+      query="UPDATE sensor SET limit_min=%s WHERE id=%s;"
+      cur.execute(query,[new_limit_value,sensor_id])
+      conn.commit()
+      self.close_connection(conn,cur)
+
+    def update_sensor_location(self,new_location_x,new_location_y,sensor_id):
       '''
       Update location of the sensor
       '''
       conn, cur=self.connect()
-      query="UPDATE sensor SET location=%s WHERE id=%s;"
-      cur.execute(query,[new_location,sensor_id])
+      query="UPDATE sensor SET location_x=%s, location_y=%s WHERE id=%s;"
+      cur.execute(query,[new_location_x,new_location_y,sensor_id])
       conn.commit()
       self.close_connection(conn,cur)    
     
@@ -273,9 +284,10 @@ class Database(object):
 
 database = Database()
 database.query()
-database.get_n_measurements_from_sensor(1,2)
-#database.update_sensor_location('abc',1)
-#database.update_sensor_limit(30,1)
+#database.get_n_measurements_from_sensor(1,2)
+database.update_sensor_location(33.45,65.45,1)
+database.update_sensor_min_limit(100,1)
+database.update_sensor_max_limit(100,1)
 #database.get_sensor_and_measurement_types(1)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')

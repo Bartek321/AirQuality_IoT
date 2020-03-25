@@ -46,10 +46,18 @@ class RequestHandler(object):
         elif request["json_id"] == "5":
             self.get_name_and_unit(request)
             self.serialize_result()
+        elif request["json_id"] == "6":
+            self.get_sensors_by_status(request)
+            self.serialize_result()
         elif request["json_id"] == "101":
-            self.update_sensor_limit(request)
+            self.update_sensor_limit_min(request)
+            self.serialize_result()
         elif request["json_id"] == "102":
+            self.update_sensor_limit_max(request)
+            self.serialize_result()
+        elif request["json_id"] == "103":
             self.update_sensor_location(request)
+            self.serialize_result()
         else:
             self.result = "UNKNOWN_REQUEST_TYPE"
 
@@ -79,7 +87,8 @@ class RequestHandler(object):
         sensors = self.database.get_sensors_limit_values()
 
         for sensor in sensors:
-            sensors_list.append({"sensor_id": sensor[0], "name": sensor[1], "limit": sensor[2]})
+            sensors_list.append(
+                {"sensor_id": sensor[0], "name": sensor[1], "limit_min": sensor[2], "limit_max": sensor[3]})
 
         self.result["json_id"] = request["json_id"]
         self.result["result"] = sensors_list
@@ -110,11 +119,7 @@ class RequestHandler(object):
                                                  request["timestamp_start"],
                                                  request["timestamp_end"])
         for measurement in measurements:
-            value = measurement[0]
-            timestamp = str(measurement[1])
-            measurements_list.append({"value": value, "timestamp": timestamp})
-
-        dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
+            dict_inside = {"sensor_id": request["sensor_id"], "data": measurement[0]}
         measurements_list_per_sensor.append(dict_inside)
         # Building response
         self.result["json_id"] = request["json_id"]
@@ -125,49 +130,74 @@ class RequestHandler(object):
     def get_name_and_unit(self, request):
         self.result = {}
         sensors_list = []
-        sensors = self.database.get_sensor_and_measurement_types(request["sensor_id"])
+        sensor = self.database.get_sensor_and_measurement_types(request["sensor_id"])
 
-        for sensor in sensors:
-            sensors_list.append({"sensor_id": request["sensor_id"], "name": sensor[1], "unit": sensor[2]})
+        dict_inside = {"sensor_id": request["sensor_id"], "name": sensor[1],
+                       "description": sensor[2], "status": sensor[3],
+                       "limit_min": sensor[4], "limit_max": sensor[5],
+                       "limit_exceeded": sensor[6], "location_x": sensor[7],
+                       "location_y": sensor[8], "measurement_type": sensor[9],
+                       "unit": sensor[10]}
 
+        sensors_list.append(dict_inside)
         self.result["json_id"] = request["json_id"]
         self.result["result"] = sensors_list
 
     def get_sensors_by_status(self, request):
-        # dokonczyc jak baza bedzie sprawna, bo nie wiem co * zwraca
-        # dodac tez blizniacza metode get_sensors_by_location
         self.result = {}
         sensors_list = []
-        sensors = self.database.get_sensor_and_measurement_types(request["sensor_id"])
+        sensors = self.database.get_sensors_by_status(request["status"])
 
         for sensor in sensors:
-            sensors_list.append({"sensor_id": request["sensor_id"], "name": sensor[1], "unit": sensor[2]})
+            sensors_list.append({"sensor_id": request["sensor_id"], "name": sensor[1], "description": sensor[2], "status": sensor[3], "limit_min": sensor[4], "limit_max": sensor[5], "limit_exceeded": sensor[6], "location_x": sensor[7], "location_y": sensor[8]})
 
         self.result["json_id"] = request["json_id"]
         self.result["result"] = sensors_list
 
-    def update_sensor_limit(self, request):
+    def update_sensor_limit_min(self, request):
+        self.result = {}
+        self.result["json_id"] = request["json_id"]
         try:
-            self.database.update_sensor_limit(new_limit_value = request["new_limit"],
+            self.database.update_sensor_min_limit(new_limit_value = request["new_limit_min"],
                                               sensor_id = request["sensor_id"])
-            self.result = "OK"
+            self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
-            self.result = "ERROR"
+            self.result["result"] = "ERROR"
+
+    def update_sensor_limit_max(self, request):
+        self.result = {}
+        self.result["json_id"] = request["json_id"]
+        try:
+            self.database.update_sensor_max_limit(new_limit_value = request["new_limit_max"],
+                                              sensor_id = request["sensor_id"])
+            self.result["result"] = "OK"
+        except (Exception, psycopg2.DatabaseError):
+            self.result["result"] = "ERROR"
 
     def update_sensor_location(self, request):
+        self.result = {}
+        self.result["json_id"] = request["json_id"]
         try:
-            self.database.update_sensor_location(new_location = request["new_location"],
-                                                 sensor_id = request["sensor_id"])
-            self.result = "OK"
+            self.database.update_sensor_location(new_location_x=request["location_x"],
+                                                 new_location_y=request["location_y"],
+                                                 sensor_id=request["sensor_id"])
+            self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
-            self.result = "ERROR"
+            self.result["result"] = "ERROR"
+
 
 json_data = '''{
-	"json_id": "4",
-	"timestamp_start": "2020-01-20 18:32:57.100",
-	"timestamp_end": "2020-04-20 18:32:57.300",
+        "json_id": "103",
+        "timestamp_start": "2020-01-20 18:32:57.100",
+        "timestamp_end": "2020-04-20 18:32:57.300",
+    "measures": 3,
+    "status": true,
+    "location_x": 15,
+    "location_y": 25,
+    "new_limit_max": 16.6,
     "sensor_id": 1
      }'''
+
 
 rh = RequestHandler(json_data)
 print(rh.result)

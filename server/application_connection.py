@@ -2,6 +2,7 @@ import socket
 import thread
 import ssl
 from ssl import SSLError
+import request_handler
 
 
 class Singleton(type):
@@ -23,6 +24,8 @@ class ApplicationConnectionHandler(object):
         txt = sock.recv(1024)
         print ('Data received from application: ' + str(addr) + ':\t' + txt)
         #            do here what the application want
+        #rh = request_handler.RequestHandler(txt)
+        #result = rh.result
         sock.send('ACK_APP')
         sock.close()
 

@@ -221,17 +221,27 @@ class Database(object):
     
     def get_sensor_and_measurement_types(self,sensor_id):
       '''
-      Returns sensor_id with its measurement types
+      Returns information about sensor and its measurement types
       '''
       conn, cur=self.connect()
       conn, cur2=self.connect()
       query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
+      query2="SELECT id,name,description,status,limit_min,limit_max,limit_exceeded,location_x,location_y FROM sensor WHERE id=%s"
       cur.execute(query,[sensor_id])
-      result=cur.fetchall()
-      for row in result:
-         print(sensor_id,row)
+      cur2.execute(query2,[sensor_id])
+      measurement_types=cur.fetchall()
+      sensor_info=cur2.fetchall()
+      sensor_info=tuple(sensor_info)
+      temp=sensor_info
+      complex_info=temp[0]
+      for i in range(len(measurement_types)):
+        temp+=measurement_types[i]
+      for i in range(1,len(temp)):
+          complex_info+=(temp[i],)
+      print complex_info
       self.close_connection(conn,cur)
-      return result
+      self.close_connection(conn,cur2)
+      return complex_info
     
     def get_n_measurements_from_sensor(self,sensor_id,n):
       '''
@@ -248,23 +258,34 @@ class Database(object):
 
     
 
-    def update_sensor_limit(self,new_limit_value,sensor_id):
+    def update_sensor_max_limit(self,new_limit_value,sensor_id):
       '''
-      Update limit value for the sensor
+      Update max limit value for the sensor
       '''
       conn, cur=self.connect()
-      query="UPDATE sensor SET limit_value=%s WHERE id=%s;"
+      query="UPDATE sensor SET limit_max=%s WHERE id=%s;"
       cur.execute(query,[new_limit_value,sensor_id])
       conn.commit()
       self.close_connection(conn,cur)
 
-    def update_sensor_location(self,new_location,sensor_id):
+
+    def update_sensor_min_limit(self,new_limit_value,sensor_id):
+      '''
+      Update min limit value for the sensor
+      '''
+      conn, cur=self.connect()
+      query="UPDATE sensor SET limit_min=%s WHERE id=%s;"
+      cur.execute(query,[new_limit_value,sensor_id])
+      conn.commit()
+      self.close_connection(conn,cur)
+
+    def update_sensor_location(self,new_location_x,new_location_y,sensor_id):
       '''
       Update location of the sensor
       '''
       conn, cur=self.connect()
-      query="UPDATE sensor SET location=%s WHERE id=%s;"
-      cur.execute(query,[new_location,sensor_id])
+      query="UPDATE sensor SET location_x=%s, location_y=%s WHERE id=%s;"
+      cur.execute(query,[new_location_x,new_location_y,sensor_id])
       conn.commit()
       self.close_connection(conn,cur)    
     
@@ -273,10 +294,12 @@ class Database(object):
 
 database = Database()
 database.query()
-database.get_n_measurements_from_sensor(1,2)
-#database.update_sensor_location('abc',1)
-#database.update_sensor_limit(30,1)
-#database.get_sensor_and_measurement_types(1)
+#database.get_n_measurements_from_sensor(1,2)
+#database.update_sensor_location(33.45,65.45,1)
+#database.update_sensor_min_limit(100,1)
+#database.update_sensor_max_limit(100,1)
+database.get_sensor_and_measurement_types(1)
+database.get_sensor_and_measurement_types(4)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements(1)

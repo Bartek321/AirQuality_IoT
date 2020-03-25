@@ -35,8 +35,8 @@ Przykładowe zapytanie:
 ```json
 {
     "json_id": "2",
-	"timestamp_start": "2020-01-20 18:32:57.100",
-	"timestamp_end": "2020-04-20 18:32:57.300",
+    "timestamp_start": "2020-01-20 18:32:57.100",
+    "timestamp_end": "2020-04-20 18:32:57.300",
     "sensor_id": 1
      }
 ```
@@ -68,8 +68,8 @@ Przykładowa odpowiedź:
 Przykładowe zapytanie(3 ostatnie próbki):
 ```json
 {
-	"json_id": "3",
-	"measures": 3,
+    "json_id": "3",
+    "measures": 3,
     "sensor_id": 1
     }
 ```

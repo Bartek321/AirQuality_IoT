@@ -4,7 +4,7 @@ import psycopg2
 class Database(object):
 
     def __init__(self):
-        self.name = "iot"
+        self.name = "iot_new"
         self.host = "localhost"
         self.user = "postgres"
         self.password = "grupa_4"
@@ -148,13 +148,13 @@ class Database(object):
        return result
  
     
-    def get_sensors_by_location(self, location):
+    def get_sensors_by_location(self, location_x,location_y):
        '''
          Returns list of sensors mounted in one place
        '''
        conn, cur = self.connect()
-       query="SELECT * FROM sensor WHERE location=%s;"
-       cur.execute(query,[location])
+       query="SELECT * FROM sensor WHERE location_x=%s and location_y=%s;"
+       cur.execute(query,[location_x,location_y])
        result=cur.fetchall()
        for row in result:
           print(row)
@@ -167,7 +167,7 @@ class Database(object):
         Returns list of sensors and their limit values
        '''
        conn, cur = self.connect()
-       query="SELECT id,name,limit_value FROM sensor;"
+       query="SELECT id,name,limit_min,limit_max FROM sensor;"
        cur.execute(query)
        result=cur.fetchall()
        for row in result:
@@ -294,18 +294,18 @@ class Database(object):
 
 database = Database()
 database.query()
-#database.get_n_measurements_from_sensor(1,2)
+database.get_n_measurements_from_sensor(1,2)
 #database.update_sensor_location(33.45,65.45,1)
 #database.update_sensor_min_limit(100,1)
 #database.update_sensor_max_limit(100,1)
-database.get_sensor_and_measurement_types(1)
-database.get_sensor_and_measurement_types(4)
+#database.get_sensor_and_measurement_types(1)
+#database.get_sensor_and_measurement_types(4)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements(1)
 #database.get_sensors_limit_values()
 #database.get_sensors_by_status('true')
-#database.get_sensors_by_location('ZPL14 2.12')
+database.get_sensors_by_location(10.1,20.2)
 
 #database.get_rows()
 #database.insert_example_row()

@@ -1,11 +1,11 @@
 html {
     background-color: rgb(255, 255, 255);
-    padding: 1% 5% 1% 5%;
+    padding: 0.5% 5% 1% 5%;
     margin: 0;
 }
 
 body {
-	background-color: rgb(222, 222, 222);
+	background-color: rgb(244, 244, 244);
     padding: 0%;
     margin: 0;
 }
@@ -26,7 +26,17 @@ body {
 }
 
 .button {
-	width: 10%;
+	width: 80px;
+	height: 90%;
+	background-color: rgb(200, 200, 200);
+	margin-right: 2%;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: black;
+}
+
+.button2{
+	width: 120px;
 	height: 90%;
 	background-color: rgb(200, 200, 200);
 	margin-right: 2%;
@@ -37,9 +47,31 @@ body {
 
 .map {
 	width: 90%;
-	height: 90%;
-	margin: 0% 5% 0 5%;
+	height: 80%;
+	margin: 0.5% 7.5% 0 5.5%;
 	background-color: rgb(150, 150, 150);
+	overflow: scroll;
+	position: relative;
+}
+
+.map2 {
+	width: auto;
+	height: auto;
+}
+
+.ele {
+	height: 25px;
+    width: 25px;
+    background-color: rgb(0, 255, 0);
+    border-radius: 50%;
+    display: inline-block;
+	float: left;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1000;
+    padding: 5px;
+	cursor: move;
 }
 
 .element {
@@ -53,7 +85,7 @@ body {
 	width: 90%;
 	height: 90%;
 	margin: 0% 5% 0 5%;
-	background-color: rgb(200, 200, 200);
+	background-color: rgb(222, 222, 222);
 	display: flex;
 	flex-direction: column;
 }
@@ -61,7 +93,7 @@ body {
 .infobox {
 	width: 50%;
 	height: 90%;
-	background-color: rgb(150, 150, 150);
+	background-color: rgb(190, 190, 190);
 	margin: 1%;
 	display: flex;
 	flex-direction: column;
@@ -72,14 +104,17 @@ body {
 	flex-direction: row;
 	margin-left: 5px;
 	margin-top: 5px;
-	background-color: rgb(135, 135, 135);
+	background-color: rgb(160, 160, 160);
+	display:table-row;
 }
 
 .changebox {
 	width: 50%;
 	height: 90%;
-	background-color: rgb(150, 150, 150);
+	background-color: rgb(190, 190, 190);
 	margin: 1%;
+	display: flex;
+	flex-direction: column;
 }
 
 .title {
@@ -91,19 +126,67 @@ body {
 }	
 
 .label {
+	margin: 10px;
+	display:table-cell;
+	font-size: 18px;
+	padding: 1px;
+}
+
+.label1 {
+	margin: 0 10px 0 0;
+}
+
+.label2 {
+	margin: 0 10px 0 0;
+}
+
+.label3 {
+	margin: 0 10px 0 0;
+}
+
+.label4 {
 	margin: 0 10px 0 0;
 }
 
 .buttonbox {
 	height: 50px;
+	width: 500px;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
     justify-content: center;
 	margin-top: 5px;
+	position: absolute;
+    bottom: 0;
+	margin-bottom: 15px;
+}
+
+.buttonbox1{
+	height: 40px;
+	width: 90%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+    justify-content: center;
+	margin-top: 10px;
+	position: absolute;
+    bottom: 0;
+	margin-bottom: 15px;
+
 }
 
 a.button {
+	-webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    text-decoration: none;
+    color: initial;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+a.button2 {
 	-webkit-appearance: button;
     -moz-appearance: button;
     appearance: button;
@@ -175,20 +258,66 @@ a.button {
 	margin: 0 150px 150px 150px;
 }
 
-.tooltip .tooltiptext {
+.ele .tooltiptext{
     visibility: hidden;
-    width: 200px;
-    background-color: rgb(244,209, 177);
+    width: 220px;
+    background-color: rgb(200,200,200);
     color: #000000;
-    text-align: center;
+ 
     padding: 5px 0;
     border-radius: 6px;
     position: absolute;
     z-index: 1;
+	display: flex;
+	flex-direction: column;
+	
 }
 
-.tooltip:hover .tooltiptext {
+.X {
+	display:table;
+	border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.ele:hover .tooltiptext {
     visibility: visible;
+}
+
+.toolTitle {
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.toolName{
+	font-size: 14px;
+	display: table-cell;
+}
+
+.toolValue {
+	font-size: 14px;
+	position: relative;
+	display: table-cell;
+}
+
+.toolUnit{
+	font-size: 14px;
+	display: table-cell;
+}
+
+.toolRow {
+	padding: 0 0px 0 0px;
+	display: table-row;
+	background-color: rgb(180,180,180);
+}
+
+.X > div:nth-child(2n) {
+    display: flex;
+	flex-direction: row;
+	margin-left: 5px;
+	margin-top: 5px;
+	background-color: rgb(160, 160, 160);
+	display:table-row;
 }
 
 .title2 {
@@ -200,3 +329,74 @@ a.button {
 	margin-top: 2px;
 	margin-bottom: 2px;
 }	
+
+.page1 {
+	display: block;
+}
+
+.page2 {
+	display: none;
+}
+
+.page3 {
+	display: none;
+}
+
+.filetag {
+	display: none;
+}
+
+.info {
+	display: table;
+	border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.change {
+	display: table;
+	border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.change1 {
+	display: table;
+	border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.info > div:nth-child(2n) {
+    display: flex;
+	flex-direction: row;
+	margin-left: 5px;
+	margin-top: 5px;
+	background-color: rgb(140, 140, 140);
+	display:table-row;
+}
+
+.change > div:nth-child(2n) {
+    display: flex;
+	flex-direction: row;
+	margin-left: 5px;
+	margin-top: 5px;
+	background-color: rgb(140, 140, 140);
+	display:table-row;
+}
+
+.change1 > div:nth-child(2n) {
+    display: flex;
+	flex-direction: row;
+	margin-left: 5px;
+	margin-top: 5px;
+	background-color: rgb(140, 140, 140);
+	display:table-row;
+}
+
+.input {
+	margin: 0 0 0 0;
+	display:table-cell;
+	width: 80px;
+	background-color: rgb(200, 200, 200);
+	padding: 0px;
+	position: relative;
+	bottom: 2px;
+}

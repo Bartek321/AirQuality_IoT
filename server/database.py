@@ -306,7 +306,7 @@ class Database(object):
 
 database = Database()
 database.query()
-database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
+#database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)
 #database.update_sensor_location(33.45,65.45,1)
 #database.update_sensor_min_limit(100,1)

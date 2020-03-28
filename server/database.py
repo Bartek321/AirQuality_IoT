@@ -287,14 +287,27 @@ class Database(object):
       query="UPDATE sensor SET location_x=%s, location_y=%s WHERE id=%s;"
       cur.execute(query,[new_location_x,new_location_y,sensor_id])
       conn.commit()
-      self.close_connection(conn,cur)    
+      self.close_connection(conn,cur)
+
+    def add_new_measurement(self,measurement_type_id,sensor_id,time,value):
+      '''
+      Add new measurement from sensor
+      '''
+      conn, cur = self.connect()
+      query="INSERT INTO MEASUREMENT (measurement_type_id,sensor_id,time,value) VALUES (%s,%s,%s,%s);" 
+      cur.execute(query,[measurement_type_id,sensor_id,time,value])
+      conn.commit()
+      self.close_connection(conn,cur)
+
+    
     
     def write_to_database(self):
         pass
 
 database = Database()
 database.query()
-database.get_n_measurements_from_sensor(1,2)
+database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
+#database.get_n_measurements_from_sensor(1,2)
 #database.update_sensor_location(33.45,65.45,1)
 #database.update_sensor_min_limit(100,1)
 #database.update_sensor_max_limit(100,1)
@@ -305,7 +318,7 @@ database.get_n_measurements_from_sensor(1,2)
 #database.get_sensor_measurements(1)
 #database.get_sensors_limit_values()
 #database.get_sensors_by_status('true')
-database.get_sensors_by_location(10.1,20.2)
+#database.get_sensors_by_location(10.1,20.2)
 
 #database.get_rows()
 #database.insert_example_row()

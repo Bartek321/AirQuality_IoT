@@ -21,12 +21,12 @@ class ApplicationConnectionHandler(object):
         self.start_listening()
 
     def new_client(self, sock, addr):
-        txt = sock.recv(1024)
+        txt = sock.recv(4096)
         print ('Data received from application: ' + str(addr) + ':\t' + txt)
         #            do here what the application want
-        #rh = request_handler.RequestHandler(txt)
-        #result = rh.result
-        sock.send('ACK_APP')
+        rh = request_handler.RequestHandler(txt)
+        result = rh.result
+        sock.send(result)
         sock.close()
 
     def start_listening(self):

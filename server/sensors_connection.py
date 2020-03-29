@@ -2,6 +2,7 @@ import socket
 import thread
 import ssl
 from ssl import SSLError
+import request_handler
 
 
 class Singleton(type):
@@ -20,10 +21,11 @@ class SensorConnectionHandler(object):
         self.start_listening()
 
     def new_client(self, sock, addr):
-            txt = sock.recv(1024)
+            txt = sock.recv(4096)
             print ('Data received from sensor: ' + str(addr) + ':\t' + txt)
-#            process_data(txt)
-            sock.send('ACK')
+            rh = request_handler.RequestHandler(txt)
+            result = rh.result
+            sock.send(result)
             sock.close()
 
     def start_listening(self):

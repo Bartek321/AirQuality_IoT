@@ -331,9 +331,9 @@ class Database(object):
     def write_to_database(self):
         pass
 
-database = Database()
-database.query()
-database.get_measurement_type_id(4);
+#database = Database()
+#database.query()
+#database.get_measurement_type_id(4);
 #database.get_measurement_types(3)
 #database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)

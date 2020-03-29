@@ -225,5 +225,5 @@ json_data = '''{
      }'''
 
 
-rh = RequestHandler(json_data)
-print(rh.result)
+#rh = RequestHandler(json_data)
+#print(rh.result)

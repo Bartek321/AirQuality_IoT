@@ -189,16 +189,19 @@ class RequestHandler(object):
             self.result["result"] = "ERROR"
 
     def insert_measurements_into_database(self, request):
+        self.result = {}
         for req in request["data"]:
             try:
-                meas_type_id = self.database.get_measurement_types(req["sensor_id"])
+                meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
+                print meas_type_id
                 self.database.add_new_measurement(meas_type_id, req["sensor_id"], req["timestamp"], req["value"])
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
+                raise
 
 json_data = '''{
-    "json_id": "500",
+    "json_id": "5000",
     "data": [
         {
         "sensor_id": 5,
@@ -211,7 +214,7 @@ json_data = '''{
         {
         "sensor_id": 7,
         "timestamp": "2020-01-20 18:32:57.100",
-        "value": 38.6}]
+        "value": 38.6}],
     "timestamp_end": "2020-04-20 18:32:57.300",
     "measures": 3,
     "status": true,

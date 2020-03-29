@@ -270,6 +270,19 @@ class Database(object):
       self.close_connection(conn,cur)
       return result
 
+    def get_measurement_type_id(self,sensor_id):
+      '''
+      Get measurement type id for sensor
+      '''
+      conn, cur=self.connect()
+      query="SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s;"
+      cur.execute(query,[sensor_id])
+      result=cur.fetchall()
+      for row in result:
+         print(sensor_id,row)
+      self.close_connection(conn,cur)
+      return result
+
     
 
     def update_sensor_max_limit(self,new_limit_value,sensor_id):
@@ -320,7 +333,8 @@ class Database(object):
 
 database = Database()
 database.query()
-database.get_measurement_types(3)
+database.get_measurement_type_id(4);
+#database.get_measurement_types(3)
 #database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)
 #database.update_sensor_location(33.45,65.45,1)

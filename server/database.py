@@ -226,7 +226,7 @@ class Database(object):
       conn, cur=self.connect()
       conn, cur2=self.connect()
       query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
-      query2="SELECT id,name,description,status,limit_min,limit_max,limit_exceeded,location_x,location_y FROM sensor WHERE id=%s"
+      query2="SELECT id,name,description,status,limit_min,limit_max,limit_exceeded,location_x,location_y FROM sensor WHERE id=%s;"
       cur.execute(query,[sensor_id])
       cur2.execute(query2,[sensor_id])
       measurement_types=cur.fetchall()
@@ -253,6 +253,20 @@ class Database(object):
       result=cur.fetchall()
       for row in result:
          print(row)
+      self.close_connection(conn,cur)
+      return result
+
+
+    def get_measurement_types(self,sensor_id):
+      '''
+      Get measurement types for sensor
+      '''
+      conn, cur=self.connect()
+      query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
+      cur.execute(query,[sensor_id])
+      result=cur.fetchall()
+      for row in result:
+         print(sensor_id,row)
       self.close_connection(conn,cur)
       return result
 
@@ -306,6 +320,7 @@ class Database(object):
 
 database = Database()
 database.query()
+database.get_measurement_types(3)
 #database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)
 #database.update_sensor_location(33.45,65.45,1)

@@ -3,6 +3,7 @@ import thread
 import ssl
 from ssl import SSLError
 import request_handler
+from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 
 class Singleton(type):
@@ -18,7 +19,9 @@ class ApplicationConnectionHandler(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.start_listening()
+        #self.start_listening()
+        server = SimpleWebSocketServer('', 5002, WebSocketServer)
+        server.serveforever()
 
     def new_client(self, sock, addr):
         txt = sock.recv(4096)
@@ -56,7 +59,7 @@ class ApplicationConnectionHandler(object):
             wrapped_socket.close()
             raise
 
-    def send_data_to_sensor(self, data_to_send, addr, port):
+    def send_data_to_app(self, data_to_send, addr, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(20)
 
@@ -75,3 +78,23 @@ class ApplicationConnectionHandler(object):
             print SSLError
             wrapped_socket.close()
             raise
+
+
+class WebSocketServer(WebSocket):
+
+    def handleMessage(self):
+        # echo message back to client
+        self.new_client_websocket()
+
+    def handleConnected(self):
+        print(self.address, 'connected')
+
+    def handleClose(self):
+        print(self.address, 'closed')
+
+    def new_client_websocket(self):
+        print ('Data received from website: %s' % self.data)
+
+        rh = request_handler.RequestHandler(self.data)
+        result = rh.result
+        self.sendMessage(result)

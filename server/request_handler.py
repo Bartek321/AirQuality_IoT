@@ -198,7 +198,7 @@ class RequestHandler(object):
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
-                raise
+
 
 json_data = '''{
     "json_id": "5000",

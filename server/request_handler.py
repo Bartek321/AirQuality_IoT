@@ -7,13 +7,13 @@ status_counter = {}
 sensor_status = {}
 
 
-def initialize_status_counter(self):
+def initialize_status_counter():
     db = Database()
     sensors_list = db.get_sensors_limit_values()
     for sensor in sensors_list:
-        status = db.get_sensor_status(sensor["sensor_id"])
-        sensor_status[sensor["sensor_id"]] = status
-        status_counter[sensor["sensor_id"]] = 0
+        status = db.get_sensor_status(sensor[0])
+        sensor_status[sensor[0]] = status
+        status_counter[sensor[0]] = 0
 
 
 class RequestHandler(object):
@@ -206,12 +206,14 @@ class RequestHandler(object):
                 meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
                 #print meas_type_id
                 sensor_id = req["sensor_id"]
-                if req["value"] is "NULL" or req["value"] is "null" or req['value'] is "Null":
+                if req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
-                    if status_counter[sensor_id] >= 20:
+                    print(status_counter[sensor_id])
+                    if status_counter[sensor_id] >= 10:
                         self.database.update_sensor_status(sensor_id, 'false')
                         sensor_status[sensor_id] = False
+                        print("Sensor tango down")
                 else:
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], req["value"])
                     status_counter[sensor_id] = 0

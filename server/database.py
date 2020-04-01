@@ -180,7 +180,7 @@ class Database(object):
         Returns list of sensors and their limit values
        '''
        conn, cur = self.connect()
-       query="SELECT status FROM sensor WHERE sensor_id=%s;"
+       query="SELECT status FROM sensor WHERE id=%s;"
        cur.execute(query,[sensor_id])
        result=cur.fetchall()
        for row in result:

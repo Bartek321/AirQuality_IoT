@@ -175,6 +175,18 @@ class Database(object):
        self.close_connection(conn,cur)
        return result
 
+    def get_sensor_status(self, sensor_id):
+       '''
+        Returns list of sensors and their limit values
+       '''
+       conn, cur = self.connect()
+       query="SELECT status FROM sensor WHERE sensor_id=%s;"
+       cur.execute(query,[sensor_id])
+       result=cur.fetchall()
+       for row in result:
+          print(row)
+       self.close_connection(conn,cur)
+       return result
     
     def get_sensor_measurements(self,sensor_id):
        '''
@@ -313,6 +325,16 @@ class Database(object):
       conn, cur=self.connect()
       query="UPDATE sensor SET location_x=%s, location_y=%s WHERE id=%s;"
       cur.execute(query,[new_location_x,new_location_y,sensor_id])
+      conn.commit()
+      self.close_connection(conn,cur)
+
+    def update_sensor_status(self, sensor_id, status):
+      '''
+      Update location of the sensor
+      '''
+      conn, cur=self.connect()
+      query="UPDATE sensor SET status=%s WHERE id=%s;"
+      cur.execute(query,[status,sensor_id])
       conn.commit()
       self.close_connection(conn,cur)
 

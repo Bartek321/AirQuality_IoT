@@ -3,6 +3,19 @@ from  database import Database
 from datetime import datetime
 import psycopg2
 
+status_counter = {}
+sensor_status = {}
+
+
+def initialize_status_counter(self):
+    db = Database()
+    sensors_list = db.get_sensors_limit_values()
+    for sensor in sensors_list:
+        status = db.get_sensor_status(sensor["sensor_id"])
+        sensor_status[sensor["sensor_id"]] = status
+        status_counter[sensor["sensor_id"]] = 0
+
+
 class RequestHandler(object):
 
     def __init__(self, request):
@@ -14,8 +27,6 @@ class RequestHandler(object):
             self.result =  "NOT_JSON"
         else:
             self.handle_request(deserialized_data)
-
-
 
     def deserialize_data(self, request):
         try:
@@ -193,8 +204,20 @@ class RequestHandler(object):
         for req in request["data"]:
             try:
                 meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
-                print meas_type_id
-                self.database.add_new_measurement(meas_type_id, req["sensor_id"], req["timestamp"], req["value"])
+                #print meas_type_id
+                sensor_id = req["sensor_id"]
+                if req["value"] is "NULL" or req["value"] is "null" or req['value'] is "Null":
+                    self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
+                    status_counter[sensor_id] += 1
+                    if status_counter[sensor_id] >= 20:
+                        self.database.update_sensor_status(sensor_id, 'false')
+                        sensor_status[sensor_id] = False
+                else:
+                    self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], req["value"])
+                    status_counter[sensor_id] = 0
+                    if sensor_status[sensor_id] is False:
+                        self.database.update_sensor_status(sensor_id, 'true')
+                        sensor_status[sensor_id] = True
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"

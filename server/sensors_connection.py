@@ -18,6 +18,7 @@ class SensorConnectionHandler(object):
     __metaclass__ = Singleton
 
     def __init__(self):
+        request_handler.initialize_status_counter()
         self.start_listening()
 
     def new_client(self, sock, addr):

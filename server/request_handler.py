@@ -14,6 +14,8 @@ def initialize_status_counter():
         status = db.get_sensor_status(sensor[0])
         sensor_status[sensor[0]] = status
         status_counter[sensor[0]] = 0
+    print sensor_status
+    print status_counter
 
 
 class RequestHandler(object):
@@ -206,7 +208,7 @@ class RequestHandler(object):
                 meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
                 #print meas_type_id
                 sensor_id = req["sensor_id"]
-                if req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
+                if not is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
                     print(status_counter[sensor_id])
@@ -223,7 +225,14 @@ class RequestHandler(object):
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
+                raise
 
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
 
 json_data = '''{
     "json_id": "5000",
@@ -250,5 +259,7 @@ json_data = '''{
      }'''
 
 
-#rh = RequestHandler(json_data)
+json_data2 = '''{"json_id": "5000", "data": [{"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 5, "value": "NULL"}, {"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 6, "value": "NULL"}]}'''
+
+#rh = RequestHandler(json_data2)
 #print(rh.result)

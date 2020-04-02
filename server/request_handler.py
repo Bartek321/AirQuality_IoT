@@ -208,7 +208,7 @@ class RequestHandler(object):
                 meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
                 #print meas_type_id
                 sensor_id = req["sensor_id"]
-                if not is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
+                if not self.is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
                     print(status_counter[sensor_id])
@@ -227,7 +227,7 @@ class RequestHandler(object):
                 self.result["result"] = "ERROR"
                 raise
 
-    def is_number(s):
+    def is_number(self, s):
         try:
             float(s)
             return True
@@ -261,5 +261,6 @@ json_data = '''{
 
 json_data2 = '''{"json_id": "5000", "data": [{"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 5, "value": "NULL"}, {"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 6, "value": "NULL"}]}'''
 
+#initialize_status_counter()
 #rh = RequestHandler(json_data2)
 #print(rh.result)

@@ -3,7 +3,14 @@ import thread
 import ssl
 from ssl import SSLError
 import request_handler
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('logfile.log')
+formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 class Singleton(type):
     _instances = {}
@@ -23,9 +30,10 @@ class SensorConnectionHandler(object):
 
     def new_client(self, sock, addr):
             txt = sock.recv(4096)
-            print ('Data received from sensor: ' + str(addr) + ':\t' + txt)
+            logger.debug('Data received from sensor: ' + str(addr) + ':\t' + txt)
             rh = request_handler.RequestHandler(txt)
             result = rh.result
+            logger.debug(result)
             sock.send(result)
             sock.close()
 

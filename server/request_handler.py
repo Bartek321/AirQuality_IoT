@@ -2,7 +2,15 @@ import json
 from  database import Database
 from datetime import datetime
 import psycopg2
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('logfile.log')
+formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 status_counter = {}
 sensor_status = {}
 
@@ -14,8 +22,8 @@ def initialize_status_counter():
         status = db.get_sensor_status(sensor[0])
         sensor_status[sensor[0]] = status
         status_counter[sensor[0]] = 0
-    print sensor_status
-    print status_counter
+    logger.info("Sensor status: {}".format(sensor_status))
+    logger.info("Status counter: {}".format(status_counter))
 
 
 class RequestHandler(object):
@@ -35,6 +43,7 @@ class RequestHandler(object):
             deserialized_data = json.loads(request)
             return deserialized_data
         except ValueError:
+            logger.info("Request does not contain JSON! {}".format(request))
             return "NOT_JSON"
 
     def serialize_result(self):
@@ -75,6 +84,7 @@ class RequestHandler(object):
             self.insert_measurements_into_database(request)
             self.serialize_result()
         else:
+            logger.warning("Unknown request type: {}".format(str(request)))
             self.result = "UNKNOWN_REQUEST_TYPE"
 
     def time_based_measurements(self, request):
@@ -178,6 +188,7 @@ class RequestHandler(object):
                                               sensor_id = request["sensor_id"])
             self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
+            logger.error("Failed to update sensor limit min")
             self.result["result"] = "ERROR"
 
     def update_sensor_limit_max(self, request):
@@ -188,6 +199,7 @@ class RequestHandler(object):
                                               sensor_id = request["sensor_id"])
             self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
+            logger.error("Failed to update sensor limit max")
             self.result["result"] = "ERROR"
 
     def update_sensor_location(self, request):
@@ -199,6 +211,7 @@ class RequestHandler(object):
                                                  sensor_id=request["sensor_id"])
             self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
+            logger.error("Failed to update sensor location")
             self.result["result"] = "ERROR"
 
     def insert_measurements_into_database(self, request):
@@ -211,21 +224,21 @@ class RequestHandler(object):
                 if not self.is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
-                    print(status_counter[sensor_id])
                     if status_counter[sensor_id] >= 10:
                         self.database.update_sensor_status(sensor_id, 'false')
                         sensor_status[sensor_id] = False
-                        print("Sensor tango down")
+                        logger.info("Sensor {} tango down!".format(sensor_id))
                 else:
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], req["value"])
                     status_counter[sensor_id] = 0
                     if sensor_status[sensor_id] is False:
                         self.database.update_sensor_status(sensor_id, 'true')
                         sensor_status[sensor_id] = True
+                        logger.info("Sensor {} changed state to active".format(sensor_id))
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
-                raise
+                logger.exception("Error inserting measurement into database")
 
     def is_number(self, s):
         try:

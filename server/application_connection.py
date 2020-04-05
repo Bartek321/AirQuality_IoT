@@ -4,7 +4,14 @@ import ssl
 from ssl import SSLError
 import request_handler
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('logfile.log')
+formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 class Singleton(type):
     _instances = {}
@@ -87,14 +94,15 @@ class WebSocketServer(WebSocket):
         self.new_client_websocket()
 
     def handleConnected(self):
-        print(self.address, 'connected')
+        logger.debug(self.address, 'connected')
 
     def handleClose(self):
-        print(self.address, 'closed')
+        logger.debug(self.address, 'closed')
 
     def new_client_websocket(self):
-        print ('Data received from website: %s' % self.data)
+        logger.debug('Data received from website: %s' % self.data)
 
         rh = request_handler.RequestHandler(self.data)
         result = rh.result
+        logger.debug("Sent response: {}".format(result))
         self.sendMessage(result)

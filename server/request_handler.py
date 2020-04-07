@@ -1,8 +1,9 @@
 import json
-from  database import Database
+from database import Database
 from datetime import datetime
 import psycopg2
 import logging
+import math
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -33,8 +34,8 @@ class RequestHandler(object):
         self.result = None
         self.database = Database()
         deserialized_data = self.deserialize_data(request)
-        if deserialized_data is  "NOT_JSON":
-            self.result =  "NOT_JSON"
+        if deserialized_data is "NOT_JSON":
+            self.result = "NOT_JSON"
         else:
             self.handle_request(deserialized_data)
 
@@ -70,6 +71,9 @@ class RequestHandler(object):
             self.serialize_result()
         elif request["json_id"] == "6":
             self.get_sensors_by_status(request)
+            self.serialize_result()
+        elif request["json_id"] == "7":
+            self.get_values_for_dynamic_plot(request)
             self.serialize_result()
         elif request["json_id"] == "101":
             self.update_sensor_limit_min(request)
@@ -175,7 +179,10 @@ class RequestHandler(object):
         sensors = self.database.get_sensors_by_status(request["status"])
 
         for sensor in sensors:
-            sensors_list.append({"sensor_id": request["sensor_id"], "name": sensor[1], "description": sensor[2], "status": sensor[3], "limit_min": sensor[4], "limit_max": sensor[5], "limit_exceeded": sensor[6], "location_x": sensor[7], "location_y": sensor[8]})
+            sensors_list.append(
+                {"sensor_id": request["sensor_id"], "name": sensor[1], "description": sensor[2], "status": sensor[3],
+                 "limit_min": sensor[4], "limit_max": sensor[5], "limit_exceeded": sensor[6], "location_x": sensor[7],
+                 "location_y": sensor[8]})
 
         self.result["json_id"] = request["json_id"]
         self.result["result"] = sensors_list
@@ -184,8 +191,8 @@ class RequestHandler(object):
         self.result = {}
         self.result["json_id"] = request["json_id"]
         try:
-            self.database.update_sensor_min_limit(new_limit_value = request["new_limit_min"],
-                                              sensor_id = request["sensor_id"])
+            self.database.update_sensor_min_limit(new_limit_value=request["new_limit_min"],
+                                                  sensor_id=request["sensor_id"])
             self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
             logger.error("Failed to update sensor limit min")
@@ -195,8 +202,8 @@ class RequestHandler(object):
         self.result = {}
         self.result["json_id"] = request["json_id"]
         try:
-            self.database.update_sensor_max_limit(new_limit_value = request["new_limit_max"],
-                                              sensor_id = request["sensor_id"])
+            self.database.update_sensor_max_limit(new_limit_value=request["new_limit_max"],
+                                                  sensor_id=request["sensor_id"])
             self.result["result"] = "OK"
         except (Exception, psycopg2.DatabaseError):
             logger.error("Failed to update sensor limit max")
@@ -219,9 +226,10 @@ class RequestHandler(object):
         for req in request["data"]:
             try:
                 meas_type_id = self.database.get_measurement_type_id(req["sensor_id"])[0]
-                #print meas_type_id
+                # print meas_type_id
                 sensor_id = req["sensor_id"]
-                if not self.is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req['value'] == "Null":
+                if not self.is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req[
+                    'value'] == "Null":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
                     if status_counter[sensor_id] >= 10:
@@ -247,6 +255,64 @@ class RequestHandler(object):
         except ValueError:
             return False
 
+    def get_values_for_dynamic_plot(self, request):
+        '''
+        Get always maximum 300 data values using algorithm of min and max values
+        from the elements interval.
+        :param request:
+        :return:
+        '''
+        self.result = {}
+        measurements_list = []
+        measurements_list_per_sensor = []
+        measurements = self.database.get_sensor_measurements_from_time_period(request["sensor_id"],
+                                                                              request["timestamp_start"],
+                                                                              request["timestamp_end"])
+        for measurement in measurements:
+            value = measurement[0]
+            timestamp = str(measurement[1])
+            measurements_list.append({"value": value, "timestamp": timestamp})
+
+        n_elements = len(measurements_list)
+        window_size = 32
+        max_elements = 300
+
+        if n_elements <= max_elements:
+            dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
+            measurements_list_per_sensor.append(dict_inside)
+        else:
+            level = math.ceil(math.log(n_elements / max_elements, window_size))
+            if level == 0:
+                dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
+                measurements_list_per_sensor.append(dict_inside)
+            else:
+                element_start = 0
+                new_meas_dict = {0: measurements_list}
+                for lev in range(1, level + 1):
+                    new_meas_dict[lev] = []
+                    while element_start <= n_elements - window_size - 1:
+                        element_end = element_start + window_size - 1
+                        temp_min = new_meas_dict[lev-1][element_start]
+                        temp_max = new_meas_dict[lev-1][element_end]
+                        for it in new_meas_dict[lev-1][element_start + 1:element_end]:
+                            if it['value'] < temp_min['value']:
+                                temp_min = it
+                            elif it['value'] > temp_max['value']:
+                                temp_max = it
+                        new_meas_dict[lev].append(temp_min)
+                        new_meas_dict[lev].append(temp_max)
+                        element_start += element_end + 1
+                    n_elements = len(new_meas_dict[lev])
+
+                dict_inside = {"sensor_id": request["sensor_id"], "data": new_meas_dict[level]}
+                measurements_list_per_sensor.append(dict_inside)
+
+        self.result["json_id"] = request["json_id"]
+        self.result["timestamp_start"] = request["timestamp_start"]
+        self.result["timestamp_end"] = request["timestamp_end"]
+        self.result["result"] = measurements_list_per_sensor
+
+
 json_data = '''{
     "json_id": "5000",
     "data": [
@@ -271,9 +337,8 @@ json_data = '''{
     "sensor_id": 1
      }'''
 
-
 json_data2 = '''{"json_id": "5000", "data": [{"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 5, "value": "NULL"}, {"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 6, "value": "NULL"}]}'''
 
-#initialize_status_counter()
-#rh = RequestHandler(json_data2)
-#print(rh.result)
+# initialize_status_counter()
+# rh = RequestHandler(json_data2)
+# print(rh.result)

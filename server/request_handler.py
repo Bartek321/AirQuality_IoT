@@ -4,10 +4,11 @@ from datetime import datetime
 import psycopg2
 import logging
 import math
+from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('logfile.log')
+file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50*1024*1024)
 formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 file_handler.setFormatter(formatter)
 

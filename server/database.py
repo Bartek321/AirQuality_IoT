@@ -142,8 +142,8 @@ class Database(object):
        query="SELECT * FROM sensor WHERE status=%s;"
        cur.execute(query,[status])
        result=cur.fetchall()
-       for row in result:
-         print(row)
+       #for row in result:
+       #  print(row)
        self.close_connection(conn,cur)
        return result
  
@@ -156,8 +156,8 @@ class Database(object):
        query="SELECT * FROM sensor WHERE location_x=%s and location_y=%s;"
        cur.execute(query,[location_x,location_y])
        result=cur.fetchall()
-       for row in result:
-          print(row)
+       #for row in result:
+       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -170,8 +170,8 @@ class Database(object):
        query="SELECT id,name,limit_min,limit_max FROM sensor;"
        cur.execute(query)
        result=cur.fetchall()
-       for row in result:
-          print(row)
+       #for row in result:
+       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -183,8 +183,8 @@ class Database(object):
        query="SELECT status FROM sensor WHERE id=%s;"
        cur.execute(query,[sensor_id])
        result=cur.fetchall()
-       for row in result:
-          print(row)
+       #for row in result:
+       #   print(row)
        self.close_connection(conn,cur)
        return result
     
@@ -196,8 +196,8 @@ class Database(object):
        query="SELECT value FROM measurement WHERE sensor_id=%s;"
        cur.execute(query,[sensor_id])
        result=cur.fetchall()
-       for row in result:
-          print(row)
+       #for row in result:
+       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -210,8 +210,8 @@ class Database(object):
        query="SELECT value, time FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
        cur.execute(query,[sensor_id,startTime,stopTime])
        result=cur.fetchall()
-       for row in result:
-          print(row)
+       #for row in result:
+       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -224,8 +224,8 @@ class Database(object):
       query="SELECT avg(value) FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
       cur.execute(query,[sensor_id,startTime,stopTime])
       result=cur.fetchall()
-      for row in result:
-         print(row)
+      #for row in result:
+      #   print(row)
       self.close_connection(conn,cur)
       return result
 
@@ -250,7 +250,7 @@ class Database(object):
         temp+=measurement_types[i]
       for i in range(1,len(temp)):
           complex_info+=(temp[i],)
-      print complex_info
+      #print complex_info
       self.close_connection(conn,cur)
       self.close_connection(conn,cur2)
       return complex_info
@@ -263,8 +263,8 @@ class Database(object):
       query="SELECT value, time FROM measurement WHERE sensor_id=%s ORDER BY time DESC LIMIT %s;"
       cur.execute(query,[sensor_id,n])
       result=cur.fetchall()
-      for row in result:
-         print(row)
+      #for row in result:
+      #   print(row)
       self.close_connection(conn,cur)
       return result
 
@@ -277,8 +277,8 @@ class Database(object):
       query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
       cur.execute(query,[sensor_id])
       result=cur.fetchall()
-      for row in result:
-         print(sensor_id,row)
+      #for row in result:
+      #   print(sensor_id,row)
       self.close_connection(conn,cur)
       return result
 
@@ -290,8 +290,8 @@ class Database(object):
       query="SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s;"
       cur.execute(query,[sensor_id])
       result=cur.fetchall()
-      for row in result:
-         print(sensor_id,row)
+      #for row in result:
+      #   print(sensor_id,row)
       self.close_connection(conn,cur)
       return result
 
@@ -355,7 +355,8 @@ class Database(object):
 
 #database = Database()
 #database.query()
-#database.get_measurement_type_id(4);
+#database.get_measurement_type_id(11);
+#database.get_measurement_type_id(13);
 #database.get_measurement_types(3)
 #database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)

@@ -274,21 +274,24 @@ class RequestHandler(object):
             measurements_list.append({"value": value, "timestamp": timestamp})
 
         n_elements = len(measurements_list)
-        window_size = 32
+        window_size = 4
         max_elements = 300
-
+        logger.debug("N elements: " + str(n_elements))
         if n_elements <= max_elements:
             dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
             measurements_list_per_sensor.append(dict_inside)
         else:
             level = math.ceil(math.log(n_elements / max_elements, window_size))
+            level = int(level)
+            logger.debug("Level: " + str(level))
             if level == 0:
                 dict_inside = {"sensor_id": request["sensor_id"], "data": measurements_list}
                 measurements_list_per_sensor.append(dict_inside)
             else:
-                element_start = 0
-                new_meas_dict = {0: measurements_list}
-                for lev in range(1, level + 1):
+                sorted_measurements_list = sorted(measurements_list, key=lambda k: k['timestamp'])
+                new_meas_dict = {0: sorted_measurements_list}
+                for lev in range(1, int(level) + 1):
+                    element_start = 0
                     new_meas_dict[lev] = []
                     while element_start <= n_elements - window_size - 1:
                         element_end = element_start + window_size - 1
@@ -301,9 +304,11 @@ class RequestHandler(object):
                                 temp_max = it
                         new_meas_dict[lev].append(temp_min)
                         new_meas_dict[lev].append(temp_max)
-                        element_start += element_end + 1
+                        element_start += window_size + 1
                     n_elements = len(new_meas_dict[lev])
-
+                    sorted_new_meas_dict = sorted(new_meas_dict[lev], key=lambda k: k['timestamp'])
+                    new_meas_dict[lev] = sorted_new_meas_dict
+                    logger.debug("N elements" + str(n_elements))
                 dict_inside = {"sensor_id": request["sensor_id"], "data": new_meas_dict[level]}
                 measurements_list_per_sensor.append(dict_inside)
 
@@ -314,7 +319,7 @@ class RequestHandler(object):
 
 
 json_data = '''{
-    "json_id": "5000",
+    "json_id": "7",
     "data": [
         {
         "sensor_id": 5,
@@ -339,6 +344,8 @@ json_data = '''{
 
 json_data2 = '''{"json_id": "5000", "data": [{"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 5, "value": "NULL"}, {"timestamp": "2020-04-01 21:33:41.00", "sensor_id": 6, "value": "NULL"}]}'''
 
-# initialize_status_counter()
-# rh = RequestHandler(json_data2)
-# print(rh.result)
+json_data3 = '''{"json_id": "7","timestamp_start": "2020-04-01 18:32:57","timestamp_end": "2020-04-03 18:32:57","sensor_id": 5}'''
+
+#initialize_status_counter()
+#rh = RequestHandler(json_data3)
+#print(rh.result)

@@ -1,0 +1,182 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="page6_files/d3.js"></script>
+  <script src="page6_files/d3-fetch.js"></script>
+    <style>
+    body {
+        font-family: Arial;
+    }
+    table,td {
+  		border: 1px solid black;
+  		text-align: center;
+	}
+	th {
+		background-color: #6495ED;
+		border: 1px solid black;
+  		text-align: center;
+  		padding: 8px;
+	}
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .box {
+      float: left;
+      width: 50%;
+      padding: 20px;
+
+    }
+    .center {
+      margin: auto;
+    }
+
+
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    </style>
+
+    
+  </head>
+  <body>
+  	<table>
+  		<th>lokalizacja</th>
+  		<th>identyfikator czujnika</th>
+  		<th>aktualny pomiar</th>
+  		<th>jednostka</th>
+  		<tr>
+	  		<td rowspan="7">A</td>
+	  		<td id ="czujnik temperatury A"></td>
+		    <td id="temperatura A"></td>
+		    <td id="°C A"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik wilgotności A"></td>
+		    <td id="wilgotność A"></td>
+		    <td id="%RH A"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik tlenku węgla A"></td>
+		    <td id="tlenek węgla A"></td>
+		    <td id="ppm A"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik wibracji A"></td>
+		    <td id="wibracje A"></td>
+		    <td id="Hz A"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik PM2,5 A"></td>
+		    <td id="PM2,5 A"></td>
+		    <td id="μg/m3 A1"></td>
+		<tr>
+	  		<td id ="czujnik PM1 A"></td>
+		    <td id="PM1 A"></td>
+		    <td id="μg/m3 A2"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik PM10 A"></td>
+		    <td id="PM10 A"></td>
+		    <td id="μg/m3 A3"></td>
+	    </tr>
+
+	    <td rowspan="7">B</td>
+  		<td id ="czujnik temperatury B"></td>
+	    <td id="temperatura B"></td>
+	    <td id="°C B"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik wilgotności B"></td>
+		    <td id="wilgotność B"></td>
+		    <td id="%RH B"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik tlenku węgla B"></td>
+		    <td id="tlenek węgla B"></td>
+		    <td id="ppm B"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik wibracji B"></td>
+		    <td id="wibracje B"></td>
+		    <td id="Hz B"></td>
+	    </tr>
+	   <tr>
+	  		<td id ="czujnik PM2,5 B"></td>
+		    <td id="PM2,5 B"></td>
+		    <td id="μg/m3 B1"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik PM1 B"></td>
+		    <td id="PM1 B"></td>
+		    <td id="μg/m3 B2"></td>
+	    </tr>
+	    <tr>
+	  		<td id ="czujnik PM10 B"></td>
+		    <td id="PM10 B"></td>
+		    <td id="μg/m3 B3"></td>
+	    </tr>
+  	</table>
+      
+    <div class="clearfix" style="float: left; ">
+    <div id="curve_chart1" class="box" style="width: 800px; height: 500px"></div>  
+
+    <script>
+
+	var objA =  {"sensor_id": 1, 
+                "data": [
+                        	{"timestamp": "2020-03-14 13:00:00","value": 23.0}, 
+                            {"timestamp": "2020-03-14 13:15:00","value": 25.0}, 
+                            {"timestamp": "2020-03-14 13:15:00","value": 60.0}
+                        ]
+                }
+
+    var objB =  {"sensor_id": 2, 
+                 "data": [
+                            {"timestamp": "2020-03-14 13:00:00","value": 23.0}, 
+                            {"timestamp": "2020-03-14 13:15:00","value": 25.0}, 
+                            {"timestamp": "2020-03-14 13:15:00","value": 30.0}
+                         ]
+                }
+
+
+/*wyciąga identyfikator czujnika + najbardziej aktualny jego pomiar z JSON dodajac jednostke
+obj - JSON
+id - identyfikator trzeciej kolumny w tabeli (aktualny pomiar)
+id2 - identyfikator drugiej kolumny (id czujnika)
+id3 - identyfikator czwartej kolumny(jednostka)
+*/
+
+function getRecentValueOfMeasurement(obj,id,id2,id3,unit){
+sensor_id = obj.sensor_id;
+lenghtOfDataFromJson=obj.data.length;
+lastRecord=obj.data[lenghtOfDataFromJson-1];
+recentValue=lastRecord.value;
+document.getElementById(id2).innerHTML=sensor_id;
+document.getElementById(id).innerHTML=recentValue;
+document.getElementById(id3).innerHTML=unit;
+}
+
+getRecentValueOfMeasurement(objA,"temperatura A","czujnik temperatury A","°C A","°C");
+getRecentValueOfMeasurement(objA,"wilgotność A","czujnik wilgotności A","%RH A","%RH");
+getRecentValueOfMeasurement(objA,"tlenek węgla A","czujnik tlenku węgla A","ppm A","ppm");
+getRecentValueOfMeasurement(objA,"wibracje A","czujnik wibracji A","Hz A","Hz");
+getRecentValueOfMeasurement(objA,"PM2,5 A","czujnik PM2,5 A","μg/m3 A1","μg/m3");
+getRecentValueOfMeasurement(objA,"PM1 A","czujnik PM1 A","μg/m3 A2","μg/m3");
+getRecentValueOfMeasurement(objA,"PM10 A","czujnik PM10 A","μg/m3 A3","μg/m3");
+
+getRecentValueOfMeasurement(objB,"temperatura B","czujnik temperatury B","°C B","°C");
+getRecentValueOfMeasurement(objB,"wilgotność B","czujnik wilgotności B","%RH B","%RH");
+getRecentValueOfMeasurement(objB,"tlenek węgla B","czujnik tlenku węgla B","ppm B","ppm");
+getRecentValueOfMeasurement(objB,"wibracje B","czujnik wibracji B","Hz B","Hz");
+getRecentValueOfMeasurement(objB,"PM2,5 B","czujnik PM2,5 B","μg/m3 B1","μg/m3");
+getRecentValueOfMeasurement(objB,"PM1 B","czujnik PM1 B","μg/m3 B2","μg/m3");
+getRecentValueOfMeasurement(objB,"PM10 B","czujnik PM10 B","μg/m3 B3","μg/m3");
+
+ </script>
+      </div> 
+  
+
+</body></html>

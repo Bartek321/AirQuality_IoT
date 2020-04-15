@@ -297,7 +297,7 @@ class RequestHandler(object):
                                                    "alarm_sensor_id": alarm["alarm_sensor_id"],
                                                    "alarm_timestamp": alarm["alarm_timestamp"]}))
 
-                alarm.pop()
+                alarm_stack.remove(alarm)
 
     def is_number(self, s):
         try:

@@ -1,10 +1,39 @@
-import database
+from database import Database
 import datetime as dt
-import statistics
+#import statistics
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50*1024*1024)
+formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+
+sensor_limit_min = {}
+sensor_limit_max = {}
+
+
+def get_current_limit_values():
+    db = Database()
+    sensors_list = db.get_sensors_limit_values()
+    for sensor in sensors_list:
+        sensor_limit_min[sensor[0]] = sensor[2]
+        sensor_limit_max[sensor[0]] = sensor[3]
+    logger.info("Sensor limit min: {}".format(sensor_limit_min))
+    logger.info("Sensor limit max: {}".format(sensor_limit_max))
 
 
 class DataProcessor(object):
     """ TO DO: Customize alarms """
+
+    def __init__(self, sensor_id, value):
+        self.sensor_id = sensor_id
+        self.value = value
+        self.is_alarm = False
+        self.alarm_type = None
 
     def do_statistics(self, sensor_id, measurement_type_id):
         pm_2_5_max_threshold = 1000
@@ -79,14 +108,24 @@ class DataProcessor(object):
                 raise_alarm(self)
                 # customize alarm for each metric
 
+    def check_if_measurement_exceed_limits(self):
+        if self.value < sensor_limit_min[self.sensor_id]:
+            self.raise_alarm("LOW")
+        elif self.value > sensor_limit_min[self.sensor_id]:
+            self.raise_alarm("HIGH")
+
     def count_the_average(self):
         pass
 
     def count_the_variance(self):
         pass
 
-    def raise_alarm(self):
-        print ("Alarm")
+    def raise_alarm(self, alarm_t):
+        self.is_alarm = True
+        if alarm_t == "LOW":
+            self.alarm_type = "LOW"
+        elif alarm_t == "HIGH":
+            self.alarm_type = "HIGH"
 
     def parse_received_data(self, txt):
         #        self.save_parsed_data_in_database()

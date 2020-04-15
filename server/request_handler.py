@@ -5,6 +5,7 @@ import psycopg2
 import logging
 import math
 from logging.handlers import RotatingFileHandler
+import data_processor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,6 +16,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 status_counter = {}
 sensor_status = {}
+
+alarm_stack = []
 
 
 def initialize_status_counter():
@@ -57,33 +60,43 @@ class RequestHandler(object):
     def handle_request(self, request):
         if request["json_id"] == "1":
             self.list_of_sensors_with_limit_value(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "2":
             self.time_based_measurements(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "3":
             self.n_last_measurements(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "4":
             self.time_based_average_measurements(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "5":
             self.get_name_and_unit(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "6":
             self.get_sensors_by_status(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "7":
             self.get_values_for_dynamic_plot(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "101":
             self.update_sensor_limit_min(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "102":
             self.update_sensor_limit_max(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "103":
             self.update_sensor_location(request)
+            self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "5000":
             self.insert_measurements_into_database(request)
@@ -195,6 +208,7 @@ class RequestHandler(object):
             self.database.update_sensor_min_limit(new_limit_value=request["new_limit_min"],
                                                   sensor_id=request["sensor_id"])
             self.result["result"] = "OK"
+            data_processor.get_current_limit_values()
         except (Exception, psycopg2.DatabaseError):
             logger.error("Failed to update sensor limit min")
             self.result["result"] = "ERROR"
@@ -206,6 +220,7 @@ class RequestHandler(object):
             self.database.update_sensor_max_limit(new_limit_value=request["new_limit_max"],
                                                   sensor_id=request["sensor_id"])
             self.result["result"] = "OK"
+            data_processor.get_current_limit_values()
         except (Exception, psycopg2.DatabaseError):
             logger.error("Failed to update sensor limit max")
             self.result["result"] = "ERROR"
@@ -244,10 +259,45 @@ class RequestHandler(object):
                         self.database.update_sensor_status(sensor_id, 'true')
                         sensor_status[sensor_id] = True
                         logger.info("Sensor {} changed state to active".format(sensor_id))
+                        dp = data_processor.DataProcessor(req['sensor_id'], req['value'])
+                        dp.check_if_measurement_exceed_limits()
+                        if dp.is_alarm is True:
+                            self.add_alarm_to_alarm_stack(dp.alarm_type, req["sensor_id"], req["timestamp"])
+                            self.result["is_alarm"] = 1
+                            if "alarms" not in self.result:
+                                self.result["alarms"] = []
+
+                            self.result["alarms"].append(dict({"alarm_type" : dp.alarm_type,
+                                                                "alarm_sensor_id" : req["sensor_id"],
+                                                                "alarm_timestamp" : req["timestamp"]}))
+                            #self.result["alarm_sensor_id"] = req["sensor_id"]
+                if "is_alarm" not in self.result:
+                    self.result["is_alarm"] = 0
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
                 logger.exception("Error inserting measurement into database")
+
+    @staticmethod
+    def add_alarm_to_alarm_stack(self, alarm_type, sensor_id, timestamp):
+        alarm_stack.append(dict({"alarm_type" : alarm_type,
+                                 "alarm_sensor_id" : sensor_id,
+                                 "alarm_timestamp" : timestamp}))
+
+    def handle_alarm_sending_to_application(self):
+        if not alarm_stack:
+            self.result["is_alarm"] = 0
+        else:
+            self.result["is_alarm"] = 1
+            for alarm in alarm_stack:
+                if "alarms" not in self.result:
+                    self.result["alarms"] = []
+
+                self.result["alarms"].append(dict({"alarm_type": alarm["alarm_type"],
+                                                   "alarm_sensor_id": alarm["alarm_sensor_id"],
+                                                   "alarm_timestamp": alarm["alarm_timestamp"]}))
+
+                alarm.pop()
 
     def is_number(self, s):
         try:

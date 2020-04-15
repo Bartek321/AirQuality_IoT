@@ -4,6 +4,7 @@ import ssl
 from ssl import SSLError
 import request_handler
 import logging
+import data_processor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -26,6 +27,7 @@ class SensorConnectionHandler(object):
 
     def __init__(self):
         request_handler.initialize_status_counter()
+        data_processor.get_current_limit_values()
         self.start_listening()
 
     def new_client(self, sock, addr):
@@ -62,7 +64,7 @@ class SensorConnectionHandler(object):
         except SSLError:
             print SSLError
             wrapped_socket.close()
-            raise
+            #raise
 
     def send_data_to_sensor(self, data_to_send, addr, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,4 +84,4 @@ class SensorConnectionHandler(object):
         except SSLError:
             print SSLError
             wrapped_socket.close()
-            raise
+            #raise

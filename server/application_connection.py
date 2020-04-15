@@ -94,15 +94,15 @@ class WebSocketServer(WebSocket):
         self.new_client_websocket()
 
     def handleConnected(self):
-        logger.debug(self.address, 'connected')
+        logger.debug(str(self.address) + 'connected')
 
     def handleClose(self):
-        logger.debug(self.address, 'closed')
+        logger.debug(str(self.address) + 'closed')
 
     def new_client_websocket(self):
         logger.debug('Data received from website: %s' % self.data)
 
         rh = request_handler.RequestHandler(self.data)
         result = rh.result
-        logger.debug("Sent response: {}".format(result))
+        logger.debug("Sent response: {}".format(str(result)))
         self.sendMessage(result)

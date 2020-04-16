@@ -353,8 +353,8 @@ class Database(object):
     def write_to_database(self):
         pass
 
-#database = Database()
-#database.query()
+database = Database()
+database.query()
 #database.get_measurement_type_id(11);
 #database.get_measurement_type_id(13);
 #database.get_measurement_types(3)
@@ -366,7 +366,7 @@ class Database(object):
 #database.get_sensor_and_measurement_types(1)
 #database.get_sensor_and_measurement_types(4)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
-#database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
+database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements(1)
 #database.get_sensors_limit_values()
 #database.get_sensors_by_status('true')

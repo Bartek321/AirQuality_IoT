@@ -1,12 +1,12 @@
 from database import Database
 import datetime as dt
-#import statistics
+import statistics as stat
 import logging
 from logging.handlers import RotatingFileHandler
-
+import request_handler
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50*1024*1024)
+file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50 * 1024 * 1024)
 formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 file_handler.setFormatter(formatter)
 
@@ -14,6 +14,59 @@ logger.addHandler(file_handler)
 
 sensor_limit_min = {}
 sensor_limit_max = {}
+
+variation_temperature = 10
+variation_humidity = 10
+variation_pm25 = 5
+variation_pm1 = 5
+variation_pm10 = 5
+# [00:00,6:00,18:00]
+temperature_model_values = [10, 17.5, 19]
+humidity_model_values = [10, 32.9, 28.1]
+pm1_model_values = [10, 20, 6]
+pm10_model_values = [10, 25, 10]
+pm25_model_values = [10, 25, 9]
+
+def generate_alarms_for_all_sensors():
+    logger.info("START ALARM FUNCTION")
+    generate_alarm_type2_wrapper(1)
+    generate_alarm_type2_wrapper(3)
+    generate_alarm_type2_wrapper(5)
+    generate_alarm_type2_wrapper(7)
+    generate_alarm_type2_wrapper(9)
+
+
+def generate_alarm_type2_wrapper(sensor_id):
+    now = dt.datetime.now()
+    today6am = now.replace(hour=6, minute=0, second=0, microsecond=0)
+    today6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
+    today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
+    start_time = now - dt.timedelta(minutes=10)
+    stop_time = now
+
+    if today00 < now <= today6am:
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
+    elif today6am < now <= today6pm:
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
+    elif today6pm < now <= today00:
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
+
+
+def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variation):
+    db = Database()
+    measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
+
+    measurements_values = []
+
+    for measurement in measurements:
+        measurements_values.append(measurement[0])
+
+    average = stat.mean(measurements_values)
+
+    if (model_value - variation) <= average or (model_value + variation >= average):
+        request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2",sensor_id,stop_time)
+        logger.info("**********Alarm!!**********")
+        logger.info("Sensor ID: {}".format(sensor_id))
 
 
 def get_current_limit_values():
@@ -139,3 +192,4 @@ class DataProcessor(object):
 
     def send_results_to_application(self, results):
         pass
+

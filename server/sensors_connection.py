@@ -5,6 +5,7 @@ from ssl import SSLError
 import request_handler
 import logging
 import data_processor
+from threading import Timer
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -28,6 +29,7 @@ class SensorConnectionHandler(object):
     def __init__(self):
         request_handler.initialize_status_counter()
         data_processor.get_current_limit_values()
+        Timer(600,data_processor.generate_alarms_for_all_sensors()).start()
         self.start_listening()
 
     def new_client(self, sock, addr):

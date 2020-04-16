@@ -31,6 +31,11 @@ def initialize_status_counter():
     logger.info("Status counter: {}".format(status_counter))
 
 
+def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
+        alarm_stack.append(dict({"alarm_type" : alarm_type,
+                                 "alarm_sensor_id" : sensor_id,
+                                 "alarm_timestamp" : timestamp}))
+
 class RequestHandler(object):
 
     def __init__(self, request):
@@ -262,7 +267,7 @@ class RequestHandler(object):
                         dp = data_processor.DataProcessor(req['sensor_id'], req['value'])
                         dp.check_if_measurement_exceed_limits()
                         if dp.is_alarm is True:
-                            self.add_alarm_to_alarm_stack(dp.alarm_type, req["sensor_id"], req["timestamp"])
+                            add_alarm_to_alarm_stack(dp.alarm_type, req["sensor_id"], req["timestamp"])
                             self.result["is_alarm"] = 1
                             if "alarms" not in self.result:
                                 self.result["alarms"] = []
@@ -278,11 +283,7 @@ class RequestHandler(object):
                 self.result["result"] = "ERROR"
                 logger.exception("Error inserting measurement into database")
 
-    @staticmethod
-    def add_alarm_to_alarm_stack(self, alarm_type, sensor_id, timestamp):
-        alarm_stack.append(dict({"alarm_type" : alarm_type,
-                                 "alarm_sensor_id" : sensor_id,
-                                 "alarm_timestamp" : timestamp}))
+
 
     def handle_alarm_sending_to_application(self):
         if not alarm_stack:

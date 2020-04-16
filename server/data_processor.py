@@ -17,7 +17,7 @@ sensor_limit_max = {}
 
 variation_temperature = 10
 variation_humidity = 10
-variation_pm25 = 5
+variation_pm25 = 1
 variation_pm1 = 5
 variation_pm10 = 5
 # [00:00,6:00,18:00]
@@ -25,15 +25,16 @@ temperature_model_values = [10, 17.5, 19]
 humidity_model_values = [10, 32.9, 28.1]
 pm1_model_values = [10, 20, 6]
 pm10_model_values = [10, 25, 10]
-pm25_model_values = [10, 25, 9]
+pm25_model_values = [10, 5, 9]
 
 def generate_alarms_for_all_sensors():
     logger.info("START ALARM FUNCTION")
     generate_alarm_type2_wrapper(1)
     generate_alarm_type2_wrapper(3)
     generate_alarm_type2_wrapper(5)
-    generate_alarm_type2_wrapper(7)
+    generate_alarm_type2_wrapper(13)
     generate_alarm_type2_wrapper(9)
+    generate_alarm_type2_wrapper(11)
 
 
 def generate_alarm_type2_wrapper(sensor_id):

@@ -32,9 +32,10 @@ def initialize_status_counter():
 
 
 def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
-        alarm_stack.append(dict({"alarm_type" : alarm_type,
-                                 "alarm_sensor_id" : sensor_id,
-                                 "alarm_timestamp" : timestamp}))
+    alarm_stack.append(dict({"alarm_type" : alarm_type,
+                             "alarm_sensor_id" : sensor_id,
+                             "alarm_timestamp" : timestamp}))
+    logger.info("ALARM!!!" + str(sensor_id))
 
 class RequestHandler(object):
 
@@ -250,7 +251,7 @@ class RequestHandler(object):
                 # print meas_type_id
                 sensor_id = req["sensor_id"]
                 if not self.is_number(req['value']) or req["value"] == "NULL" or req["value"] == "null" or req[
-                    'value'] == "Null":
+                    'value'] == "Null" or req['value'] == "nan":
                     self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], None)
                     status_counter[sensor_id] += 1
                     if status_counter[sensor_id] >= 10:
@@ -276,12 +277,12 @@ class RequestHandler(object):
                                                                 "alarm_sensor_id" : req["sensor_id"],
                                                                 "alarm_timestamp" : req["timestamp"]}))
                             #self.result["alarm_sensor_id"] = req["sensor_id"]
-                if "is_alarm" not in self.result:
-                    self.result["is_alarm"] = 0
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
                 self.result["result"] = "ERROR"
                 logger.exception("Error inserting measurement into database")
+        if "is_alarm" not in self.result:
+            self.result["is_alarm"] = 0
 
 
 

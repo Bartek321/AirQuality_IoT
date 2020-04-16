@@ -259,6 +259,9 @@ class RequestHandler(object):
                         sensor_status[sensor_id] = False
                         logger.info("Sensor {} tango down!".format(sensor_id))
 
+                else:
+                    self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], req["value"])
+                    status_counter[sensor_id] = 0
                     dp = data_processor.DataProcessor(req['sensor_id'], req['value'])
                     dp.check_if_measurement_exceed_limits()
                     if dp.is_alarm is True:
@@ -270,9 +273,6 @@ class RequestHandler(object):
                         self.result["alarms"].append(dict({"alarm_type": dp.alarm_type,
                                                            "alarm_sensor_id": req["sensor_id"],
                                                            "alarm_timestamp": req["timestamp"]}))
-                else:
-                    self.database.add_new_measurement(meas_type_id, sensor_id, req["timestamp"], req["value"])
-                    status_counter[sensor_id] = 0
                     if sensor_status[sensor_id] is False:
                         self.database.update_sensor_status(sensor_id, 'true')
                         sensor_status[sensor_id] = True

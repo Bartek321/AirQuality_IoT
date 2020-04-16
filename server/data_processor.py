@@ -17,7 +17,7 @@ sensor_limit_max = {}
 
 variation_temperature = 10
 variation_humidity = 10
-variation_pm25 = 1
+variation_pm25 = 5
 variation_pm1 = 5
 variation_pm10 = 5
 # [00:00,6:00,18:00]
@@ -25,14 +25,14 @@ temperature_model_values = [10, 17.5, 19]
 humidity_model_values = [10, 32.9, 28.1]
 pm1_model_values = [10, 20, 6]
 pm10_model_values = [10, 25, 10]
-pm25_model_values = [10, 5, 9]
+pm25_model_values = [10, 25, 9]
 
 def generate_alarms_for_all_sensors():
     logger.info("START ALARM FUNCTION")
     generate_alarm_type2_wrapper(1)
     generate_alarm_type2_wrapper(3)
     generate_alarm_type2_wrapper(5)
-    generate_alarm_type2_wrapper(13)
+    generate_alarm_type2_wrapper(11)
     generate_alarm_type2_wrapper(9)
     generate_alarm_type2_wrapper(11)
 
@@ -44,25 +44,29 @@ def generate_alarm_type2_wrapper(sensor_id):
     today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
     start_time = now - dt.timedelta(minutes=10)
     stop_time = now
-
+    logger.info("NOW" + now)
     if today00 < now <= today6am:
+        logger.info("od 0:00 do 6:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
     elif today6am < now <= today6pm:
+        logger.info("od 6:00 do 18:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
     elif today6pm < now <= today00:
+        logger.info("od 18:00 do 0:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
 
 
 def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variation):
     db = Database()
+    logger.info("SENSOR ID" + sensor_id)
     measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
-
     measurements_values = []
 
     for measurement in measurements:
         measurements_values.append(measurement[0])
 
     average = stat.mean(measurements_values)
+    logger.info("MEAN" + average)
 
     if (model_value - variation) <= average or (model_value + variation >= average):
         request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2",sensor_id,stop_time)
@@ -193,4 +197,3 @@ class DataProcessor(object):
 
     def send_results_to_application(self, results):
         pass
-

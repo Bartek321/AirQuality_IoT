@@ -35,7 +35,7 @@ def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
     alarm_stack.append(dict({"alarm_type" : alarm_type,
                              "alarm_sensor_id" : sensor_id,
                              "alarm_timestamp" : timestamp}))
-    logger.info("ALARM!!!" + str(sensor_id))
+    logger.info("ALARM!!! " + str(sensor_id))
 
 class RequestHandler(object):
 

@@ -89,7 +89,7 @@ class DataProcessor(object):
 
     def __init__(self, sensor_id, value):
         self.sensor_id = sensor_id
-        self.value = value
+        self.value = float(value)
         self.is_alarm = False
         self.alarm_type = None
 

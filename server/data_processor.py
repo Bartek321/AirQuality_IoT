@@ -169,7 +169,7 @@ class DataProcessor(object):
     def check_if_measurement_exceed_limits(self):
         if self.value < sensor_limit_min[self.sensor_id]:
             self.raise_alarm("LOW")
-        elif self.value > sensor_limit_min[self.sensor_id]:
+        elif self.value > sensor_limit_max[self.sensor_id]:
             self.raise_alarm("HIGH")
 
     def count_the_average(self):

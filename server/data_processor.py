@@ -44,7 +44,7 @@ def generate_alarm_type2_wrapper(sensor_id):
     today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
     start_time = now - dt.timedelta(minutes=10)
     stop_time = now
-    logger.info("NOW" + now)
+    logger.info("NOW" + str(now))
     if today00 < now <= today6am:
         logger.info("od 0:00 do 6:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
@@ -58,7 +58,7 @@ def generate_alarm_type2_wrapper(sensor_id):
 
 def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variation):
     db = Database()
-    logger.info("SENSOR ID" + sensor_id)
+    logger.info("SENSOR ID" + str(sensor_id))
     measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
     measurements_values = []
 
@@ -66,7 +66,7 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
         measurements_values.append(measurement[0])
 
     average = stat.mean(measurements_values)
-    logger.info("MEAN" + average)
+    logger.info("MEAN" + str(average))
 
     if (model_value - variation) <= average or (model_value + variation >= average):
         request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2",sensor_id,stop_time)

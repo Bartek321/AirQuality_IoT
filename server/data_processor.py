@@ -4,6 +4,7 @@ import statistics as stat
 import logging
 from logging.handlers import RotatingFileHandler
 import request_handler
+import time
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50 * 1024 * 1024)
@@ -28,13 +29,16 @@ pm10_model_values = [10, 25, 10]
 pm25_model_values = [10, 25, 9]
 
 def generate_alarms_for_all_sensors():
-    logger.info("START ALARM FUNCTION")
-    generate_alarm_type2_wrapper(1)
-    generate_alarm_type2_wrapper(3)
-    generate_alarm_type2_wrapper(5)
-    generate_alarm_type2_wrapper(11)
-    generate_alarm_type2_wrapper(9)
-    generate_alarm_type2_wrapper(11)
+    
+    while True:
+        generate_alarm_type2_wrapper(1)
+        generate_alarm_type2_wrapper(3)
+        generate_alarm_type2_wrapper(5)
+        generate_alarm_type2_wrapper(11)
+        generate_alarm_type2_wrapper(9)
+        generate_alarm_type2_wrapper(11)
+        time.sleep(200)
+
 
 
 def generate_alarm_type2_wrapper(sensor_id):
@@ -42,16 +46,17 @@ def generate_alarm_type2_wrapper(sensor_id):
     today6am = now.replace(hour=6, minute=0, second=0, microsecond=0)
     today6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
     today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
+    today2359 = now.replace(hour=23, minute=59, second=59, microsecond=0)
     start_time = now - dt.timedelta(minutes=10)
     stop_time = now
     logger.info("NOW" + str(now))
-    if today00 < now <= today6am:
+    if now > today00 and now <= today6am:
         logger.info("od 0:00 do 6:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
-    elif today6am < now <= today6pm:
+    elif now > today6am and now <= today6pm:
         logger.info("od 6:00 do 18:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
-    elif today6pm < now <= today00:
+    elif now > today6pm and now <= today2359:
         logger.info("od 18:00 do 0:00")
         generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
 

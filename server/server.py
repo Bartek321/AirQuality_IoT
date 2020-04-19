@@ -10,7 +10,7 @@ class Server:
 
     def __init__(self):
         thread.start_new_thread(self.start_listening_sensors,())
-        Timer(200, data_processor.generate_alarms_for_all_sensors()).start()
+        thread.start_new_thread(data_processor.generate_alarms_for_all_sensors,())
         #self.start_listening_sensors()
         self.start_listening_application()
 

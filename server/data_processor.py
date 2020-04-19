@@ -80,9 +80,9 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
             logger.info("Sensor ID: {}".format(sensor_id))
     else:
         logger.info("SLEEP")
-        time.sleep(600)
+        
 
-    logger.info("MEAN" + str(average))
+   
 
 def get_current_limit_values():
     db = Database()

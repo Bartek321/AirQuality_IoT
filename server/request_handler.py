@@ -34,7 +34,8 @@ def initialize_status_counter():
 def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
     alarm_stack.append(dict({"alarm_type" : alarm_type,
                              "alarm_sensor_id" : sensor_id,
-                             "alarm_timestamp" : timestamp}))
+                             "alarm_timestamp" : timestamp,
+                             "sent_to_rpi": False }))
     logger.info("ALARM!!! " + str(sensor_id))
 
 class RequestHandler(object):
@@ -288,6 +289,17 @@ class RequestHandler(object):
                             self.result["alarms"].append(dict({"alarm_type" : dp.alarm_type,
                                                                 "alarm_sensor_id" : req["sensor_id"],
                                                                 "alarm_timestamp" : req["timestamp"]}))
+                    if alarm_stack:
+                        for alarm in alarm_stack:
+                            if alarm["alarm_type"] == "ALARM_TYPE_2" and alarm["sent_to_rpi"] is False:
+                                self.result["is_alarm"] = 1
+                                if "alarms" not in self.result:
+                                    self.result["alarms"] = []
+
+                                self.result["alarms"].append(dict({"alarm_type": dp.alarm_type,
+                                                                   "alarm_sensor_id": req["sensor_id"],
+                                                                   "alarm_timestamp": req["timestamp"]}))
+                                alarm["sent_to_rpi"] = True
                             #self.result["alarm_sensor_id"] = req["sensor_id"]
                 self.result["result"] = "OK"
             except (Exception, psycopg2.DatabaseError):
@@ -295,7 +307,6 @@ class RequestHandler(object):
                 logger.exception("Error inserting measurement into database")
         if "is_alarm" not in self.result:
             self.result["is_alarm"] = 0
-
 
 
     def handle_alarm_sending_to_application(self):

@@ -3,7 +3,7 @@ import datetime as dt
 import statistics as stat
 import logging
 from logging.handlers import RotatingFileHandler
-from request_handler import add_alarm_to_alarm_stack
+import request_handler
 import time
 
 logger = logging.getLogger(__name__)
@@ -87,14 +87,14 @@ class DataProcessor(object):
             logger.info("MEAN" + str(average))
             if (model_value - variation) <= average or (model_value + variation >= average):
                 logger.info("ADDING TO STACK")
-                add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
+                request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
                 logger.info("IS ALARM TRUE")
                 self.is_alarm = True
                 logger.info("**********Alarm!!**********")
         else:
             logger.info("SLEEP")
 
-    def get_current_limit_values():
+    def get_current_limit_values(self):
         db = Database()
         sensors_list = db.get_sensors_limit_values()
         for sensor in sensors_list:

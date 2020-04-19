@@ -72,12 +72,15 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
         measurements_values.append(measurement[0])
 
     if len(measurements_values) != 0:
-        average = stat.mean(measurements_values)
-        logger.info("MEAN" + str(average))
-        if (model_value - variation) <= average or (model_value + variation >= average):
-            request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
-            logger.info("**********Alarm!!**********")
-            logger.info("Sensor ID: {}".format(sensor_id))
+      for x in measurements_values: 
+        if not isinstance(x, float):                     
+          del measurements_values[x]
+      average = stat.mean(measurements_values)
+      logger.info("MEAN" + str(average))
+      if (model_value - variation) <= average or (model_value + variation >= average):
+          request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
+          logger.info("**********Alarm!!**********")
+          logger.info("Sensor ID: {}".format(sensor_id))
     else:
         logger.info("SLEEP")
         

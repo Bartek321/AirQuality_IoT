@@ -298,7 +298,7 @@ class RequestHandler(object):
 
                                 self.result["alarms"].append(dict({"alarm_type": alarm["alarm_type"],
                                                                    "alarm_sensor_id": alarm["alarm_sensor_id"],
-                                                                   "alarm_timestamp": alarm["alarm_timestamp"]}))
+                                                                   "alarm_timestamp": str(alarm["alarm_timestamp"])}))
                                 alarm["sent_to_rpi"] = True
                             #self.result["alarm_sensor_id"] = req["sensor_id"]
                 self.result["result"] = "OK"

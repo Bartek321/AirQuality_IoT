@@ -66,18 +66,23 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
     logger.info("SENSOR ID" + str(sensor_id))
     measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
     measurements_values = []
+    average = 0
 
     for measurement in measurements:
         measurements_values.append(measurement[0])
 
-    average = stat.mean(measurements_values)
+    if len(measurements_values) != 0:
+        average = stat.mean(measurements_values)
+        logger.info("MEAN" + str(average))
+        if (model_value - variation) <= average or (model_value + variation >= average):
+            request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
+            logger.info("**********Alarm!!**********")
+            logger.info("Sensor ID: {}".format(sensor_id))
+    else:
+        logger.info("SLEEP")
+        time.sleep(600)
+
     logger.info("MEAN" + str(average))
-
-    if (model_value - variation) <= average or (model_value + variation >= average):
-        request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2",sensor_id,stop_time)
-        logger.info("**********Alarm!!**********")
-        logger.info("Sensor ID: {}".format(sensor_id))
-
 
 def get_current_limit_values():
     db = Database()

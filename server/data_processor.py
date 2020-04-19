@@ -5,7 +5,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 import request_handler
 import time
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50 * 1024 * 1024)
@@ -29,7 +28,62 @@ pm1_model_values = [10, 20, 6]
 pm10_model_values = [10, 25, 10]
 pm25_model_values = [10, 25, 9]
 
+def generate_alarms_for_all_sensors():
     
+    while True:
+        generate_alarm_type2_wrapper(1)
+        generate_alarm_type2_wrapper(3)
+        generate_alarm_type2_wrapper(5)
+        generate_alarm_type2_wrapper(11)
+        generate_alarm_type2_wrapper(9)
+        generate_alarm_type2_wrapper(11)
+        time.sleep(200)
+
+
+
+def generate_alarm_type2_wrapper(sensor_id):
+    now = dt.datetime.now()
+    today6am = now.replace(hour=6, minute=0, second=0, microsecond=0)
+    today6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
+    today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
+    today2359 = now.replace(hour=23, minute=59, second=59, microsecond=0)
+    start_time = now - dt.timedelta(minutes=10)
+    stop_time = now
+    logger.info("NOW" + str(now))
+    if now > today00 and now <= today6am:
+        logger.info("od 0:00 do 6:00")
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
+    elif now > today6am and now <= today6pm:
+        logger.info("od 6:00 do 18:00")
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
+    elif now > today6pm and now <= today2359:
+        logger.info("od 18:00 do 0:00")
+        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
+
+
+def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variation):
+    db = Database()
+    logger.info("SENSOR ID" + str(sensor_id))
+    measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
+    measurements_values = []
+    average = 0
+
+    for measurement in measurements:
+        measurements_values.append(measurement[0])
+
+    if len(measurements_values) != 0:
+        average = stat.mean(measurements_values)
+        logger.info("MEAN" + str(average))
+        if (model_value - variation) <= average or (model_value + variation >= average):
+            request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
+            logger.info("**********Alarm!!**********")
+            logger.info("Sensor ID: {}".format(sensor_id))
+    else:
+        logger.info("SLEEP")
+        
+
+   
+
 def get_current_limit_values():
     db = Database()
     sensors_list = db.get_sensors_limit_values()
@@ -43,67 +97,11 @@ def get_current_limit_values():
 class DataProcessor(object):
     """ TO DO: Customize alarms """
 
-    def __init__(self):
-        #self.sensor_id = sensor_id
-        #self.value = float(value)
+    def __init__(self, sensor_id, value):
+        self.sensor_id = sensor_id
+        self.value = float(value)
         self.is_alarm = False
         self.alarm_type = None
-        #self.result["is_alarm"] = 1
-
-    def generate_alarms_for_all_sensors(self):
-
-        while True:
-            self.generate_alarm_type2_wrapper(1)
-            self.generate_alarm_type2_wrapper(3)
-            self.generate_alarm_type2_wrapper(5)
-            self.generate_alarm_type2_wrapper(11)
-            self.generate_alarm_type2_wrapper(9)
-            self.generate_alarm_type2_wrapper(13)
-            time.sleep(200)
-
-    def generate_alarm_type2_wrapper(self, sensor_id):
-        now = dt.datetime.now()
-        today6am = now.replace(hour=6, minute=0, second=0, microsecond=0)
-        today6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
-        today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
-        today2359 = now.replace(hour=23, minute=59, second=59, microsecond=0)
-        start_time = now - dt.timedelta(minutes=10)
-        stop_time = now
-        logger.info("NOW" + str(now))
-        if now > today00 and now <= today6am:
-            logger.info("od 0:00 do 6:00")
-            self.generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0],
-                                      variation_temperature)
-        elif now > today6am and now <= today6pm:
-            logger.info("od 6:00 do 18:00")
-            self.generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1],
-                                      variation_temperature)
-        elif now > today6pm and now <= today2359:
-            logger.info("od 18:00 do 0:00")
-            self.generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2],
-                                      variation_temperature)
-
-    def generate_alarm_type2(self, sensor_id, start_time, stop_time, model_value, variation):
-        db = Database()
-        logger.info("SENSOR ID" + str(sensor_id))
-        measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
-        measurements_values = []
-
-        for measurement in measurements:
-            measurements_values.append(measurement[0])
-
-        if len(measurements_values) != 0:
-            average = stat.mean(measurements_values)
-            logger.info("MEAN" + str(average))
-            if (model_value - variation) <= average or (model_value + variation >= average):
-                logger.info("ADDING TO STACK")
-                request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
-                logger.info("IS ALARM TRUE")
-                self.is_alarm = True
-                logger.info("**********Alarm!!**********")
-        else:
-            logger.info("SLEEP")
-
 
     def do_statistics(self, sensor_id, measurement_type_id):
         pm_2_5_max_threshold = 1000

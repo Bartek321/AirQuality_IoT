@@ -30,25 +30,25 @@ pm10_model_values = [10, 25, 10]
 pm25_model_values = [10, 25, 9]
 
     
-    def get_current_limit_values():
-        db = Database()
-        sensors_list = db.get_sensors_limit_values()
-        for sensor in sensors_list:
-            sensor_limit_min[sensor[0]] = sensor[2]
-            sensor_limit_max[sensor[0]] = sensor[3]
-        logger.info("Sensor limit min: {}".format(sensor_limit_min))
-        logger.info("Sensor limit max: {}".format(sensor_limit_max))
+def get_current_limit_values():
+    db = Database()
+    sensors_list = db.get_sensors_limit_values()
+    for sensor in sensors_list:
+        sensor_limit_min[sensor[0]] = sensor[2]
+        sensor_limit_max[sensor[0]] = sensor[3]
+    logger.info("Sensor limit min: {}".format(sensor_limit_min))
+    logger.info("Sensor limit max: {}".format(sensor_limit_max))
 
 
 class DataProcessor(object):
     """ TO DO: Customize alarms """
 
-    def __init__(self, sensor_id, value):
-        self.sensor_id = sensor_id
-        self.value = float(value)
+    def __init__(self):
+        #self.sensor_id = sensor_id
+        #self.value = float(value)
         self.is_alarm = False
         self.alarm_type = None
-        self.result["is_alarm"] = 1
+        #self.result["is_alarm"] = 1
 
     def generate_alarms_for_all_sensors(self):
 

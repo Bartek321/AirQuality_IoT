@@ -1,34 +1,13 @@
 <html>
   <head>
     <script src="https://d3js.org/d3.v4.js"></script>
-  <script src="https://unpkg.com/d3-fetch"></script>
+    <script src="https://unpkg.com/d3-fetch"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
     body {
         font-family: Arial;
     }
-        
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: lightblue; 
-    }
-
-    li {
-      float: left;
-
-    }
-
-    li a {
-      display: block;
-      color: black;
-      text-align: center;
-      padding: 6px 40px;
-      text-decoration: none;
-      font-size: 16px;
-    }
-
+	
     * {
       box-sizing: border-box;
     }
@@ -51,49 +30,85 @@
     }
     </style>
 
-    
-  </head>
-  <body>
-    <ul>
-      <li><a>Lokalizacja:   A</a></li>
-      <li><a>Pyły PM2.5:    165</a></li>
-      <li><a>Temperatura:   15°C</a></li>
-      <li><a>Wilgotność:    35%</a></li>
-      <li><a>Tlenek Węgla:  0</a></li>
-      <li><a>Wibracje:  0</a></li>
-    </ul>
-    <ul>
-      <li><a>Lokalizacja:   B</a></li>
-      <li><a>Pyły PM2.5:    135</a></li>
-      <li><a>Temperatura:   19°C</a></li>
-      <li><a>Wilgotność:    45%</a></li>
-      <li><a>Tlenek Węgla:  0</a></li>
-      <li><a>Wibracje:  4</a></li>
-    </ul>
+
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>
+<div class="tabbar">
+	<a href=page.html class="button2" id="buttona">Plan</a>
+	<a href=page.html class="button2" id="buttonb">Konfiguracja</a>
+	<a href=page6.html class="button2">Dane</a>
+	<a href=page.html class="button2" id="buttonc">Opcje</a>
+	<a href=page.html class="button" id="button1">O2</a>-
+	<a href=page.html class="button2" id="button2">O3</a>
+	<input class="filetag" type="file" id="filetag"/>
+</div>
+
       
     <div class="clearfix" style= "float: left; ">
-    <div id="curve_chart1"  class="box" style="width: 800px; height: 500px"></div>  
-    <script>
+    	<div id="curve_chart1"  class="box" style="width: 1600px; height: 1200px">
+	<div class="btn-group btn-group-md" role="group" aria-label="Small button group" style= "position: fixed; left: 50%; margin-top: 20px; transform: translate(-50%, -50%);">	
+	<button class="btn btn-secondary" id="sensor_1" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Temperatura A</button>
+	<button class="btn btn-secondary" id="sensor_2" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wilgotnosc A</button>
+	<button class="btn btn-secondary" id="sensor_3" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Tlenek wegla A</button>
+	<button class="btn btn-secondary" id="sensor_4" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje A</button>
+	<button class="btn btn-secondary" id="sensor_5" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 A</button>
+	<button class="btn btn-secondary" id="sensor_6" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 A</button>
+	<button class="btn btn-secondary" id="sensor_7" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 A</button>
+	</div>
+	<div class="btn-group btn-group-md" role="group" aria-label="Small button group" style= "position: fixed; left: 50%; margin-top: 60px; transform: translate(-50%, -50%);">
+	<button class="btn btn-secondary id="sensor_8" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px"> Temperatura B</button>
+	<button class="btn btn-secondary id="sensor_9" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wilgotnosc B</button>
+	<button class="btn btn-secondary id="sensor_10" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px" >Tlenek wegla B</button>
+	<button class="btn btn-secondary id="sensor_11" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje B</button>
+	<button class="btn btn-secondary id="sensor_12" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 B</button>
+	<button class="btn btn-secondary id="sensor_13" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 B</button>
+	<button class="btn btn-secondary id="sensor_14" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 B</button>
+	</div>
+	<br>
 
+	<svg id="svg1" width="710" height="460" style= "position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);"></svg>
+	</div>
+    <script>
+    var b1 = d3.select("#sensor_1")
+    var b2 = d3.select("#sensor_2")
+    var b3 = d3.select("#sensor_3")
+    var b4 = d3.select("#sensor_4")
+    var b5 = d3.select("#sensor_5")
+    var b6 = d3.select("#sensor_6")
+    var b7 = d3.select("#sensor_7")
+    var b8 = d3.select("#sensor_8")
+    var b9 = d3.select("#sensor_9")
+    var b10 = d3.select("#sensor_10")
+    var b11 = d3.select("#sensor_11")
+    var b12 = d3.select("#sensor_12")
+    var b13 = d3.select("#sensor_13")
+    var b14 = d3.select("#sensor_14")
+
+
+    console.log("Socket");
     var socket = new WebSocket('ws://127.0.0.1:50092');
     socket.onopen = function() {
         console.log('Connected!');
-        socket.send('{"json_id": "2","timestamp_start": "2019-07-20 18:32:57","timestamp_end": "2020-04-10 18:32:57","sensor_id": 1}');
+	var now = new Date();
+    
+	timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+	var starting_json = {"json_id": "7","timestamp_start": "2020-04-07 09:00:00","timestamp_end":timestamp_now ,"sensor_id": 1} 
+    	first_json = JSON.stringify(starting_json)
+        socket.send(first_json);
+	console.log(first_json)
     };
     socket.onmessage = function(event) {
-        var obj = JSON.parse(event.data);
+	var obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+        //var obj = JSON.parse(event.data);
         records = obj.result[0].data
-	
+
 	for (r in records)
-	{
-		//x = Date.parse(records[r].timestamp)
-		//records[r].timestamp = new Date(x);  	
+	{ 	
  		records[r].timestamp = Date.parse(records[r].timestamp)
-		if (records[r].value > 100){
-		records[r].value = 100}
-	
 	}
-	console.log(records);
+	console.log("records")
+	console.log(records)
         main(records);
         socket.close();
     };
@@ -104,54 +119,62 @@
         console.log('Error!');
     };
       // set the dimensions and margins of the graph
-      var margin = {top: 10, right: 30, bottom: 30, left: 60},
-          width = 710 - margin.left - margin.right,
-          height = 460 - margin.top - margin.bottom;
+      var margin = {top: 30, right: 30, bottom: 60, left: 60},
+          width = 1000 - margin.left - margin.right,
+          height = 750 - margin.top - margin.bottom;
       
       // append the svg object to the body of the page
-      var svg = d3.select("#curve_chart1")
-        .append("svg")
+      var svga = d3.select("#svg1")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
         .append("g")
           .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
 
-      svg.append("text")             
-        .attr("transform", "translate(" + (width/2) + " ," +  (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
-        .text("Data");
+      svga.append("text").attr('id', 'bottom_axis_text')             
+        .attr("transform", "translate(" + (width/2) + " ," +  (height + margin.top + 25) + ")")
+        .style("text-anchor", "middle").style("font-size","20px")
+        .text("Data pomiaru ");
 
 
-      svg.append("text")
+      svga.append("text").attr('id', 'left_axis_text')
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
         .attr("x",0 - (height / 2))
         .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Temperatura [°C]"); 
-  
-      var  dta =   
-      [
-      {date:0, value: 24.12 },
-{date:1, value: 24.185 },
-{date:2, value: 24.060000000000002 },
-{date:3, value: 24.105 },
-{date:4, value: 24.16 },
-{date:5, value: 24.225 },
-{date:6, value: 24.33 },
-{date:7, value: 24.205000000000002 },
-{date:8, value: 24.38 },
-{date:9, value: 24.225 },
-{date:10, value: 24.45 }
-      ]
-          
+        .style("text-anchor", "middle").style("font-size","20px")
+        .text("T [°C]"); 
+    function pad(n){return n<10 ? '0'+n : n}
     function main(data) {
 
-      var x = d3.scaleTime()
+    	var current_sensor = 1;
+	b1.on("click", function () {buttonX(1); });
+	b8.on("click", function () {buttonX(2); });
+
+	b2.on("click", function () {buttonX(9); });
+	b9.on("click", function () {buttonX(10); });
+
+	b3.on("click", function () {buttonX(3); });
+	b10.on("click", function () {buttonX(4); });
+
+	b4.on("click", function () {buttonX(7); });
+	b11.on("click", function () {buttonX(8); });
+
+	b5.on("click", function () {buttonX(5); });
+	b12.on("click", function () {buttonX(6); });
+
+	b6.on("click", function () {buttonX(11); });
+	b13.on("click", function () {buttonX(12); });
+
+	b7.on("click", function () {buttonX(13); });	
+	b14.on("click", function () {buttonX(14); });
+
+
+
+      var x = d3.scaleUtc()
         .domain(d3.extent(data, function(d) { return d.timestamp; }))
         .range([ 0, width ]);
-      xAxis = svg.append("g")
+      xAxis = svga.append("g").style("font-size","16px")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
   
@@ -159,13 +182,13 @@
       var y = d3.scaleLinear()
         .domain([0, d3.max(data, function(d) { return +d.value; })])
         .range([ height, 0 ]);
-      yAxis = svg.append("g")
+      yAxis = svga.append("g").style("font-size","16px")
         .call(d3.axisLeft(y));
   
       // Add a clipPath: everything out of this area won't be drawn.
-      var clip = svg.append("defs").append("svg:clipPath")
-          .attr("id", "clip")
-          .append("svg:rect")
+      var clip = svga.append("defs").append("svga:clipPath")
+          .attr("id", "clipa")
+          .append("svga:rect")
           .attr("width", width )
           .attr("height", height )
           .attr("x", 0)
@@ -177,20 +200,23 @@
           .on("end", updateChart)               // Each time the brush selection changes, trigger the 'updateChart' function
   
       // Create the line variable: where both the line and the brush take place
-      var line = svg.append('g')
-        .attr("clip-path", "url(#clip)")
+      var line = svga.append('g')
+        .attr("clip-path", "url(#clipa)")
+
   
       // Add the line
       line.append("path")
-        .datum(data)
+        .data([data])
         .attr("class", "line")  // I add the class line to be able to modify this line later on.
         .attr("fill", "none")
-        .attr("stroke", "green")
-        .attr("stroke-width", 2.5)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-          .x(function(d) { return x(d.timestamp) })
-          .y(function(d) { return y(d.value) })
+          .x(function(d) { return x(+d.timestamp) })
+          .y(function(d) { return y(+d.value) })
           )
+
+
   
       // Add the brushing
       line
@@ -201,108 +227,268 @@
       // A function that set idleTimeOut to null
       var idleTimeout
       function idled() { idleTimeout = null; }
+
+      function buttonX(button_id) {
+	current_sensor = button_id
+	var now = new Date();  
+	timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+
+	new_json = JSON.stringify({"json_id": "7","timestamp_start": "2020-04-07 09:00:00","timestamp_end":timestamp_now, "sensor_id": current_sensor})
+
+        var socket = new WebSocket('ws://127.0.0.1:50092');
+        socket.onopen = function() {console.log('Connected!');
+        socket.send(new_json);};
+        socket.onmessage = function(event) {
+            var button_obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            var button_records = button_obj.result[0].data
+
+            for (r in button_records)
+            { 	
+                button_records[r].timestamp = Date.parse(button_records[r].timestamp)
+            }
+	    first_record = button_records[0].timestamp
+	    fd = new Date(first_record)
+	    fd = fd.toLocaleDateString();	    	    
+	    last_record = button_records[button_records.length - 1].timestamp
+	    ld = new Date(last_record)
+	    ld = ld.toLocaleDateString();
+
+	axis_text = d3.select("#left_axis_text")
+	bottom_text = d3.select("#bottom_axis_text")
+	bottom_text.text("Zakres dat: "+fd+" - "+ld)
+        switch (current_sensor) {
+        case 1:
+            axis_text.text("Temperatura [ C]");
+            break;
+
+        case 2:
+            axis_text.text("Temperatura [ C]")
+            break;
+
+        case 3:
+            axis_text.text("Tlenek wegla [ppm]")
+            break;
+
+        case 4:
+            axis_text.text("Tlenek wegla [ppm]")
+            break;
+
+        case 9:
+            axis_text.text("Wilgotnosc [%RH]")
+            break;
+
+        case 10:
+            axis_text.text("Wilgotnosc [%RH]")
+            break;
+
+        case 7:
+            axis_text.text("Wibracje [Hz]")
+            break;
+
+        case 8:
+            axis_text.text("Wibracje [Hz]")
+            break;
+
+        case 5:
+            axis_text.text("PM 2.5 [ug/m3]")
+            break;
+
+        case 6:
+            axis_text.text("PM 2.5 [ug/m3]")
+            break;
+
+        case 11:
+            axis_text.text("PM 1 [ug/m3]")
+            break;
+
+        case 12:
+            axis_text.text("PM 1 [ug/m3]")
+            break;
+
+        case 13:
+            axis_text.text("PM 10 [ug/m3]")
+            break;
+
+        case 14:
+            axis_text.text("PM 10 [ug/m3]")
+            break;
+           
+        default:
+            axis_text.text("Nie obslugiwana jednostka")
+        }
+
+
+        var button_data = svga.selectAll(".line")
+            .data([button_records], function(d){ return d.value });
+
+        button_data
+            .enter()
+            .append("path")
+            .attr("class","line")
+            .merge(button_data)
+            .transition()
+            .duration(600)
+            .attr("d", d3.line()
+            .x(function(d) { return x(d.timestamp); })
+            .y(function(d) { return y(d.value); }))
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1.5)
+
+        x.domain(d3.extent(button_records, function(d) { return d.timestamp; }))
+          .range([ 0, width ]);
+	
+        // Add Y axis
+        y.domain([0, d3.max(button_records, function(d) { return +d.value; })])
+          .range([ height, 0 ]);
+
+        xAxis.transition().call(d3.axisBottom(x))
+        yAxis.transition().call(d3.axisLeft(y))
+
+        socket.close();
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+             
+        }
+          
   
       // A function that update the chart for given boundaries
-      function updateChart() {
+    function updateChart() {
   
-        // What are the selected boundaries?
         extent = d3.event.selection
 
 
+    if(!extent){
+        if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+        x.domain([ 4,8])
+    }else{
+        l = x.invert(extent[0])
+        r = x.invert(extent[1])
+
+        x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+
+        console.log(l+"	"+r);
+
+        timestamp_left = l.getFullYear() +"-"+ pad(l.getMonth()+1) +"-"+ pad(l.getDate()) +" "+ pad(l.getHours()) +":"+ pad(l.getMinutes()) +":"+ pad(l.getSeconds())
+        timestamp_right = r.getFullYear() +"-"+ pad(r.getMonth()+1) +"-"+ pad(r.getDate()) +" "+ pad(r.getHours()) +":"+ pad(r.getMinutes()) +":"+ pad(r.getSeconds())
 
 
+        var json_builder = {"json_id": "7","timestamp_start": timestamp_left,"timestamp_end": timestamp_right,"sensor_id": current_sensor} 
+        new_json = JSON.stringify(json_builder)
+        console.log(new_json)
+        var socket = new WebSocket('ws://127.0.0.1:50092');
+        socket.onopen = function() {console.log('Connected!');
+        socket.send(new_json);};
+        socket.onmessage = function(event) {
+            var new_obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            var new_records = new_obj.result[0].data
+
+            for (r in new_records)
+            { 	
+                new_records[r].timestamp = Date.parse(new_records[r].timestamp)
+	    }
+
+	y.domain([d3.min(new_records, function(d) { return +d.value; }), d3.max(new_records, function(d) { return +d.value; })])
+	    .range([ height, 0 ]);
 
 
+    var u = svga.selectAll(".line")
+        .data([new_records], function(d){ return d.value });
 
-
-        // If no selection, back to initial coordinate. Otherwise, update X axis domain
-        if(!extent){
-          if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-          x.domain([ 4,8])
-        }else{
-          x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
-	  left = x.invert(extent[0])
-	  right = x.invert(extent[1])
-	  var l_year = left.getFullYear();
-	  var l_month = left.getMonth();
-	  var l_day = left.getDay();
-	  var l_hour = left.getHours();
-	  var l_min = left.getMinutes();
-	  var l_sec = left.getSeconds();
-
-	  var r_year = right.getFullYear();
-	  var r_month = right.getMonth();
-	  var r_day = right.getDay();
-	  var r_hour = right.getHours();
-	  var r_min = right.getMinutes();
-	  var r_sec = right.getSeconds();
-	  left = l_year +"-"+ l_month +"-"+ l_day +" "+ l_hour +":"+ l_min +":"+ l_sec
-	  var json_builder = {"json_id": "2","timestamp_start": left,"timestamp_end": right,"sensor_id": 1}
-	  new_json = JSON.stringify(json_builder)
-          var socket = new WebSocket('ws://127.0.0.1:50092');
-    	  socket.onopen = function() {console.log('Connected!');
-          socket.send(new_json);};
-    	  socket.onmessage = function(event) {
-        	var new_obj = JSON.parse(event.data);
-        	var new_records = new_obj.result[0].data
-	
-		for (r in new_records)
-		{ 	
- 		new_records[r].timestamp = Date.parse(new_records[r].timestamp)
-		if (new_records[r].value > 100){
-		new_records[r].value = 100}
-		console.log(new_records)
-		}
-	
-	        socket.close();
-    };
-    	  socket.onclose = function() {
-        	console.log('Lost connection!');
-    	  };
-    	  socket.onerror = function() {
-        	console.log('Error!');
-    	  };
-
-	
-
-
-
-
-
-
-
-
-
-          line.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
-        }
-  
-        // Update axis and line position
-        xAxis.transition().duration(1000).call(d3.axisBottom(x))
-        line
-            .select('.line')
-            .transition()
-            .duration(1000)
-            .attr("d", d3.line()
-              .x(function(d) { return x(d.timestamp) })
-              .y(function(d) { return y(d.value) })
-            )
-      }
-  
-      // If user double click, reinitialize the chart
-      svg.on("dblclick",function(){
-        x.domain(d3.extent(data, function(d) { return d.timestamp; }))
+    u
+        .enter()
+        .append("path")
+        .attr("class","line")
+        .merge(u)
+        .transition()
+        .duration(600)
+        .attr("d", d3.line()
+        .x(function(d) { return x(d.timestamp); })
+        .y(function(d) { return y(d.value); }))
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2.0)
         xAxis.transition().call(d3.axisBottom(x))
-        line
-          .select('.line')
-          .transition()
-          .attr("d", d3.line()
-            .x(function(d) { return x(d.timestamp) })
-            .y(function(d) { return y(d.value) })
-        )
-      });
-  
-  }
-  </script>
-      </div> 
+	yAxis.transition().call(d3.axisLeft(y))
+
+                socket.close();
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+        line.select(".brush").call(brush.move, null)        
+        }
+    }      
+        svga.on("dblclick",function(){
+        var socket = new WebSocket('ws://127.0.0.1:50092');
+        socket.onopen = function() {
+            console.log('Connected!');
+        var now = new Date();
+            timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+        var db_click_json = {"json_id": "7","timestamp_start": "2020-04-08 00:00:00","timestamp_end": timestamp_now,"sensor_id": current_sensor}
+            db_json = JSON.stringify(db_click_json)
+            console.log(db_json);
+
+            socket.send(db_json);
+        };
+        socket.onmessage = function(event) {
+            var obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            records = obj.result[0].data
+            
+        for (r in records)
+        {	
+            records[r].timestamp = Date.parse(records[r].timestamp)
+        }
+        x.domain(d3.extent(records, function(d) { return d.timestamp; }))
+            .range([ 0, width ]);
+	y.domain([0, d3.max(records, function(d) { return +d.value; })])
+	    .range([ height, 0 ]);
+
+
+    var z = svga.selectAll(".line")
+        .data([records], function(d){ return d.value });
+
+    z
+        .enter()
+        .append("path")
+        .attr("class","line")
+        .merge(z)
+        .transition()
+        .duration(600)
+        .attr("d", d3.line()
+        .x(function(d) { return x(d.timestamp); })
+        .y(function(d) { return y(d.value); }))
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
+        xAxis.transition().call(d3.axisBottom(x))
+	yAxis.transition().call(d3.axisLeft(y))
+
+        socket.close();
+
+
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+
+
+        });  
+    }
+  </script>   
+    </div>
+ 
+ 
   </body>
 </html>

@@ -1,12 +1,17 @@
 <html>
 <head>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+ <script src="https://unpkg.com/d3-fetch"></script>
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+	
 <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 <body>
 <div class="tabbar">
 	<a class="button2" id="buttona">Plan</a>
 	<a class="button2" id="buttonb">Konfiguracja</a>
-	<a class="button2">Dane</a>
+	<a class="button2" id="dataButton">Dane</a>
 	<a class="button2" id="buttonc">Opcje</a>
 	<a class="button" id="button1">O2</a>-
 	<a class="button2" id="button2">O3</a>
@@ -58,16 +63,16 @@
 	
 	<div class="rowbox">
 		<div class="infobox">
-			<div class="title"><a>Wykres</a></div>
+			<div class="title"><a>Alarmy</a></div>
 			<div class="comborow">
-				<label for="combo">Parametr</label>
+				<!--<label for="combo">Parametr</label>
 				<select class="combo" id="combo2">
 				  <option value="volvo">Metan</option>
 				  <option value="saab">Metan</option>
 				  <option value="mercedes">Metan</option>
-				</select>
+				</select>-->
 			</div>
-			<div class="graph"></div>
+			<!--<div class="graph"></div>-->
 			
 		</div>
 
@@ -117,6 +122,36 @@
 	</div>
 
 </div>
+</div>
+
+<div class="page4" id="page4">
+		
+    <div id="curve_chart1" class="box">
+	
+	<div class="dataButtonBox">	
+	<a class="button2x" id="sensor_1"  >Temperatura A</a>
+	<a class="button2x" id="sensor_2" type="button" >Wilgotnosc A</a>
+	<a class="button2x" id="sensor_3" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Tlenek wegla A</a>
+	<a class="button2x" id="sensor_4" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje A</a>
+	<a class="button2x" id="sensor_5" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 A</a>
+	<a class="button2x" id="sensor_6" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 A</a>
+	<a class="button2x" id="sensor_7" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 A</a>
+	</div>
+	
+	<div class="dataButtonBox">
+	<a class="button2x" id="sensor_8" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px"> Temperatura B</a>
+	<a class="button2x" id="sensor_9" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wilgotnosc B</a>
+	<a class="button2x" id="sensor_10" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px" >Tlenek wegla B</a>
+	<a class="button2x" id="sensor_11" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje B</a>
+	<a class="button2x" id="sensor_12" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 B</a>
+	<a class="button2x" id="sensor_13" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 B</a>
+	<a class="button2x" id="sensor_14" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 B</a>
+	</div>
+	<br>
+
+	<svg id="svg1" class="svg" width="710px" height="460px" style= """></svg>
+	</div>
+	
 </div>
 </body>
 <script src="script.js"></script>

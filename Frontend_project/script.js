@@ -1,5 +1,6 @@
 var stations = [];
 document.getElementById("button").addEventListener("click", onButtonClick);
+document.getElementById("dataButton").addEventListener("click", onDataClick);
 document.getElementById("button1").addEventListener("click", onButtonClicktest);
 document.getElementById("button2").addEventListener("click", onButtonClick2);
 document.getElementById("buttona").addEventListener("click", onButtonClicka);
@@ -17,6 +18,7 @@ var stat1 = {title:"Hala produkcyjnaaa", sensors:[]};
 var sensor = {name:"Temperatura", value:"20.2", unit:"*C", stat:"on"};
 
 var isDrag = false;
+var isData = false;
 var eleClick = false;
 lst = ["a", "b"];
 
@@ -30,6 +32,16 @@ document.getElementById("combo").value = localStorage['size'];
 fileTag.addEventListener("change", function() {
 	changeImage(this);
 });
+
+var namesDict = {
+  "temperature": "Temperatura",
+  "carbon monoxide": "Tlenek węgla",
+  "PM2.5": "Pył PM 2.5",
+  "PM1": "Pył PM 1",
+  "PM10": "Pył PM 10",
+  "humidity": "Wilgotność",
+  "vibration": "Wibracje"
+};
 
 function changeImage(input) {
 	var reader;
@@ -143,6 +155,14 @@ function onEleClick(){
 		onButtonClickd(this.id);
 		stationID = this.id;
 		console.log("SSD: " + this.id);
+		
+		if(this.id == document.querySelector('[src="0"]').id) {
+			current = 1;
+			nam = stations[0].title;
+		} else if(this.id == document.querySelector('[src="1"]').id) {
+			current = 2;
+			nam = stations[1].title;
+		}
 	}
 }
 
@@ -206,7 +226,7 @@ function createStations(station) {
 			
 			var nameTag = document.createElement("div");
 			nameTag.classList.add("toolName");
-			nameTag.appendChild(document.createTextNode(station[i].sensors[j].name));
+			nameTag.appendChild(document.createTextNode(namesDict[station[i].sensors[j].name]));
 			//var valueTag = document.createElement("div");
 			//valueTag.classList.add("toolValue");
 			var text = document.createTextNode(station[i].sensors[j].value);
@@ -236,6 +256,9 @@ function createStations(station) {
 		tag.style.left = stations[i].sensors[0].locX + "px";
 		tag.style.top = stations[i].sensors[0].locY + "px";
 		mapTag.appendChild(tag);
+		
+		/*if(res == 1)
+			values = [];*/
 	}
 }
 
@@ -247,6 +270,11 @@ function onButtonClicka() {
     searchbar.style.display = "block";
 	searchbar1.style.display = "none";
 	searchbar2.style.display = "none";
+	
+	var searchbar3 = document.getElementById("page4");
+	searchbar3.style.display = "none";
+	
+	isData = false;
 }
 
 function onButtonClickb() {
@@ -257,6 +285,11 @@ function onButtonClickb() {
     searchbar.style.display = "none";
 	searchbar1.style.display = "block";
 	searchbar2.style.display = "none";
+	
+	var searchbar3 = document.getElementById("page4");
+	searchbar3.style.display = "none";
+	
+	isData = false;
 }
 
 function onButtonClickc() {
@@ -267,6 +300,11 @@ function onButtonClickc() {
     searchbar.style.display = "none";
 	searchbar1.style.display = "none";
 	searchbar2.style.display = "block";
+	
+	var searchbar3 = document.getElementById("page4");
+	searchbar3.style.display = "none";
+	
+	isData = false;
 }
 
 function onButtonClickz(){
@@ -357,7 +395,7 @@ function createData(title) {
 		var labelTag1 = document.createElement("div");
 		var labelTag2 = document.createElement("div");
 		var labelTag3 = document.createElement("div");
-		labelTag1.appendChild(document.createTextNode(temp[i].name));
+		labelTag1.appendChild(document.createTextNode(namesDict[temp[i].name]));
 		labelTag1.classList.add("label");
 		labelTag2.appendChild(document.createTextNode(temp[i].value));
 		labelTag2.classList.add("label");
@@ -386,7 +424,7 @@ function createData(title) {
 		var labelTag2 = document.createElement("div");
 		var labelTag3 = document.createElement("div");
 		var labelTag4 = document.createElement("div");
-		labelTag1.appendChild(document.createTextNode(temp[i].name));
+		labelTag1.appendChild(document.createTextNode(namesDict[temp[i].name]));
 		labelTag1.classList.add("label");
 		labelTag2.appendChild(document.createTextNode(info.min));
 		labelTag2.classList.add("label");
@@ -413,7 +451,7 @@ function createData(title) {
 		var labelTag2 = document.createElement("div");
 		var labelTag3 = document.createElement("div");
 		var labelTag4 = document.createElement("div");
-		labelTag1.appendChild(document.createTextNode(temp[i].name));
+		labelTag1.appendChild(document.createTextNode(namesDict[temp[i].name]));
 		labelTag1.classList.add("label");
 		//labelTag2.appendChild(document.createTextNode("min: "));
 		//labelTag2.classList.add("label");
@@ -437,6 +475,8 @@ function createData(title) {
 		tag1.appendChild(rowTag);
 	}
 	}
+	/*if(res == 2)
+		values = [];*/
 }
 
 function onButtonClickd(title) {	
@@ -449,6 +489,8 @@ function onButtonClickd(title) {
 	searchbar1.style.display = "block";
 	searchbar2.style.display = "none";
 	createData(title);
+	
+	
 }
 
 function onButtonClicktest() {
@@ -477,6 +519,9 @@ function dataPack(temp1) {
 	//console.log(temp1);
 	//console.log(stations);
 	//console.log("sttt11");
+	var values1 = values;
+	console.log("RA:");
+	console.log(values);
 	for(var i = 0; i < temp1.length; i++) {
 		var dat = temp1[i][0];
 		if(temp.indexOf(dat.location_x) < 0) {
@@ -489,12 +534,12 @@ function dataPack(temp1) {
 		}
 		console.log("LALA");
 		//console.log(values);
-		if(values[i] == null) {
+		if(values1[i] == null) {
 			console.log("NUL");
 			//console.log(values);
 			values.push("NaN");
 		}
-		var sensor = {name:dat.measurement_type, sensorName:dat.name, value:values[i], unit:dat.unit, stat:dat.status, sensorID:dat.sensor_id, min:dat.limit_min, max:dat.limit_max, locX:dat.location_x, locY:dat.location_y};
+		var sensor = {name:dat.measurement_type, sensorName:dat.name, value:values1[i], unit:dat.unit, stat:dat.status, sensorID:dat.sensor_id, min:dat.limit_min, max:dat.limit_max, locX:dat.location_x, locY:dat.location_y};
 			
 		for(var j = 0; j < stations.length; j++) {
 			if(stations[j].title == dat.location_x) {
@@ -503,20 +548,24 @@ function dataPack(temp1) {
 			}
 		}
 	}
+	values.length = 0;
 	console.log("AAAAAA");
 	//console.log(stations);
-	if(isDrag == false)
+	if(isDrag == false && isData == false)
 		createStations(stations);
 }
 
 var y = 0;
 var values = [];
 //var socket = new Object();
-var socket = new WebSocket('ws://127.0.0.1:50093'); 
-console.log(socket.readyState); 	 
+var socket = null;
+//console.log(socket.readyState); 	 
 var x = 0, x1 = 0, len = 0, e = 0, e1 = 0, c = 0;
 var temp2 = [];
 var size2 = 0;
+var res = 0;
+function openSocket() {
+	socket = new WebSocket('ws://127.0.0.1:50093'); 
 socket.onopen = function () { 
 		temp2 = [];   
 		stations = [];	
@@ -527,6 +576,12 @@ socket.onopen = function () {
 		data = event.data;  
 		console.log('Received data: ' + event.data)
 		var data = JSON.parse(event.data);
+		
+		console.log("SID: " + values.length);
+		console.log(values);
+		/*if(values.length == 14) {
+			values.length = 0;
+		}*/
 		
 		if(data.json_id == 101)
 			return;
@@ -582,6 +637,7 @@ socket.onopen = function () {
 		
 		if(data.json_id == 1) {
 			len = data.result.length;
+			
 			for(var i = 1; i < data.result.length + 1; i++) {
 				var request = ' {"json_id": "5", "sensor_id": '+  i.toString() + '} ';
 				socket.send(request); 
@@ -602,17 +658,20 @@ socket.onopen = function () {
 			//console.log(x1);
 			//console.log(len);
 			//if(data.result[0].data[0] != null)
-				if(data.result[0].data[0] != null)
+				if(data.result[0].data[0] != null) {
 					values.push(data.result[0].data[0].value);
-				else
+				} else {
+					console.log("NAB")
 					values.push("NaN");
+				}
 		//	else
 			//	values.push("NaN");
 		}
 		//console.log(x);
 		//console.log("x: " + x + " y: " + y + " x1: " + x1 + " len: " + len + " e: " + e + " e1: " + e1);
-		if(x == e && y == 0 && (x1 == e1 - 1 || x1 == e1)) {
+		if(x == e && y == 0 && ( x1 == e1)) {
 			dataPack(temp2);
+			res = 1;
 			console.log("raz");
 			y = 0;
 			x = 0;
@@ -622,9 +681,12 @@ socket.onopen = function () {
 			c = 0;
 			if(current == 1) {
 				createData(nam);
+				res = 2;
 			} else if(current == 2) {
 				createData(nam);
+				res = 2;
 			}
+			//values = [];
 			//setTimeout(onButtonClick2, 10000);
 		}
 		   
@@ -637,15 +699,24 @@ socket.onopen = function () {
 	socket.onerror = function () {       
 		console.log('errro!');   
 	};
+}
+openSocket();
+	
+	
 function onButtonClick2() {
 	//var socket = new WebSocket('ws://127.0.0.1:50093'); 
 	//var x = 0, len = 0, e = 0, e1 = 0;
 	//var temp = [];
-	if (socket.readyState === WebSocket.OPEN && isDrag == false) {
+	if (socket.readyState == WebSocket.OPEN && isDrag == false && isData == false) {
 		//stations = [];	
 		console.log('go!'); 
 		socket.send(' {"json_id": "1"} '); 
    // Do your stuff...
+	} else if (socket.readyState != WebSocket.OPEN && isDrag == false && isData == false) {
+		openSocket();
+		console.log("open");
+	} else {
+		console.log("nic");
 	}
 	setTimeout(onButtonClick2, 10000);
 	//var temp = [];
@@ -806,6 +877,24 @@ window.onclick = function(event) {
   }
 }
 
+function onDataClick() {
+	var svg = document.getElementById("svg1");
+	svg.innerHTML = '';
+	isData = !isData;
+	
+	var searchbar = document.getElementById("page1");
+	var searchbar1 = document.getElementById("page2");
+	var searchbar2 = document.getElementById("page3");
+
+    searchbar.style.display = "none";
+	searchbar1.style.display = "none";
+	searchbar2.style.display = "none";
+	
+	var searchbar3 = document.getElementById("page4");
+	searchbar3.style.display = "block";
+	test();
+}
+
 /*function onButtonClick3() {
 	fetch('http://127.0.0.1:5002/dat').then((response) => {
 		return response.json();
@@ -814,3 +903,428 @@ window.onclick = function(event) {
 		console.log(getSensorInfo("Hala 1"));
 	});
 }*/
+
+
+
+
+
+
+
+function test() {
+	var b1 = d3.select("#sensor_1")
+    var b2 = d3.select("#sensor_2")
+    var b3 = d3.select("#sensor_3")
+    var b4 = d3.select("#sensor_4")
+    var b5 = d3.select("#sensor_5")
+    var b6 = d3.select("#sensor_6")
+    var b7 = d3.select("#sensor_7")
+    var b8 = d3.select("#sensor_8")
+    var b9 = d3.select("#sensor_9")
+    var b10 = d3.select("#sensor_10")
+    var b11 = d3.select("#sensor_11")
+    var b12 = d3.select("#sensor_12")
+    var b13 = d3.select("#sensor_13")
+    var b14 = d3.select("#sensor_14")
+
+
+    console.log("Socket");
+    var socket = new WebSocket('ws://127.0.0.1:50093');
+    socket.onopen = function() {
+        console.log('Connected!');
+	var now = new Date();
+    
+	timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+	var starting_json = {"json_id": "7","timestamp_start": "2020-04-07 09:00:00","timestamp_end":timestamp_now ,"sensor_id": 1} 
+    	first_json = JSON.stringify(starting_json)
+        socket.send(first_json);
+	console.log(first_json)
+    };
+    socket.onmessage = function(event) {
+	var obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+        //var obj = JSON.parse(event.data);
+        records = obj.result[0].data
+
+	for (r in records)
+	{ 	
+ 		records[r].timestamp = Date.parse(records[r].timestamp)
+	}
+	console.log("records")
+	console.log(records)
+        main(records);
+        socket.close();
+    };
+    socket.onclose = function() {
+        console.log('Lost connection!');
+    };
+    socket.onerror = function() {
+        console.log('Error!');
+    };
+      // set the dimensions and margins of the graph
+      var margin = {top: 30, right: 30, bottom: 60, left: 60},
+          width = 740 - margin.left - margin.right,
+          height = 480 - margin.top - margin.bottom;
+      
+      // append the svg object to the body of the page
+      var svga = d3.select("#svg1")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+      svga.append("text").attr('id', 'bottom_axis_text')             
+        .attr("transform", "translate(" + (width/2) + " ," +  (height + margin.top + 25) + ")")
+        .style("text-anchor", "middle").style("font-size","20px")
+        .text("Data pomiaru ");
+
+
+      svga.append("text").attr('id', 'left_axis_text')
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle").style("font-size","20px")
+        .text("T [°C]"); 
+    function pad(n){return n<10 ? '0'+n : n}
+    function main(data) {
+
+    	var current_sensor = 1;
+	b1.on("click", function () {buttonX(1); });
+	b8.on("click", function () {buttonX(2); });
+
+	b2.on("click", function () {buttonX(9); });
+	b9.on("click", function () {buttonX(10); });
+
+	b3.on("click", function () {buttonX(3); });
+	b10.on("click", function () {buttonX(4); });
+
+	b4.on("click", function () {buttonX(7); });
+	b11.on("click", function () {buttonX(8); });
+
+	b5.on("click", function () {buttonX(5); });
+	b12.on("click", function () {buttonX(6); });
+
+	b6.on("click", function () {buttonX(11); });
+	b13.on("click", function () {buttonX(12); });
+
+	b7.on("click", function () {buttonX(13); });	
+	b14.on("click", function () {buttonX(14); });
+
+
+
+      var x = d3.scaleUtc()
+        .domain(d3.extent(data, function(d) { return d.timestamp; }))
+        .range([ 0, width ]);
+      xAxis = svga.append("g").style("font-size","16px")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+  
+      // Add Y axis
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return +d.value; })])
+        .range([ height, 0 ]);
+      yAxis = svga.append("g").style("font-size","16px")
+        .call(d3.axisLeft(y));
+  
+      // Add a clipPath: everything out of this area won't be drawn.
+      var clip = svga.append("defs").append("svga:clipPath")
+          .attr("id", "clipa")
+          .append("svga:rect")
+          .attr("width", width )
+          .attr("height", height )
+          .attr("x", 0)
+          .attr("y", 0);
+  
+      // Add brushing
+      var brush = d3.brushX()                   // Add the brush feature using the d3.brush function
+          .extent( [ [0,0], [width,height] ] )  // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+          .on("end", updateChart)               // Each time the brush selection changes, trigger the 'updateChart' function
+  
+      // Create the line variable: where both the line and the brush take place
+      var line = svga.append('g')
+        .attr("clip-path", "url(#clipa)")
+
+  
+      // Add the line
+      line.append("path")
+        .data([data])
+        .attr("class", "line")  // I add the class line to be able to modify this line later on.
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return x(+d.timestamp) })
+          .y(function(d) { return y(+d.value) })
+          )
+
+
+  
+      // Add the brushing
+      line
+        .append("g")
+          .attr("class", "brush")
+          .call(brush);
+  
+      // A function that set idleTimeOut to null
+      var idleTimeout
+      function idled() { idleTimeout = null; }
+
+      function buttonX(button_id) {
+	current_sensor = button_id
+	var now = new Date();  
+	timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+
+	new_json = JSON.stringify({"json_id": "7","timestamp_start": "2020-04-07 09:00:00","timestamp_end":timestamp_now, "sensor_id": current_sensor})
+
+        var socket = new WebSocket('ws://127.0.0.1:50093');
+        socket.onopen = function() {console.log('Connected!');
+        socket.send(new_json);};
+        socket.onmessage = function(event) {
+            var button_obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            var button_records = button_obj.result[0].data
+
+            for (r in button_records)
+            { 	
+                button_records[r].timestamp = Date.parse(button_records[r].timestamp)
+            }
+	    first_record = button_records[0].timestamp
+	    fd = new Date(first_record)
+	    fd = fd.toLocaleDateString();	    	    
+	    last_record = button_records[button_records.length - 1].timestamp
+	    ld = new Date(last_record)
+	    ld = ld.toLocaleDateString();
+
+	axis_text = d3.select("#left_axis_text")
+	bottom_text = d3.select("#bottom_axis_text")
+	bottom_text.text("Zakres dat: "+fd+" - "+ld)
+        switch (current_sensor) {
+        case 1:
+            axis_text.text("Temperatura [ C]");
+            break;
+
+        case 2:
+            axis_text.text("Temperatura [ C]")
+            break;
+
+        case 3:
+            axis_text.text("Tlenek wegla [ppm]")
+            break;
+
+        case 4:
+            axis_text.text("Tlenek wegla [ppm]")
+            break;
+
+        case 9:
+            axis_text.text("Wilgotnosc [%RH]")
+            break;
+
+        case 10:
+            axis_text.text("Wilgotnosc [%RH]")
+            break;
+
+        case 7:
+            axis_text.text("Wibracje [Hz]")
+            break;
+
+        case 8:
+            axis_text.text("Wibracje [Hz]")
+            break;
+
+        case 5:
+            axis_text.text("PM 2.5 [ug/m3]")
+            break;
+
+        case 6:
+            axis_text.text("PM 2.5 [ug/m3]")
+            break;
+
+        case 11:
+            axis_text.text("PM 1 [ug/m3]")
+            break;
+
+        case 12:
+            axis_text.text("PM 1 [ug/m3]")
+            break;
+
+        case 13:
+            axis_text.text("PM 10 [ug/m3]")
+            break;
+
+        case 14:
+            axis_text.text("PM 10 [ug/m3]")
+            break;
+           
+        default:
+            axis_text.text("Nie obslugiwana jednostka")
+        }
+
+
+        var button_data = svga.selectAll(".line")
+            .data([button_records], function(d){ return d.value });
+
+        button_data
+            .enter()
+            .append("path")
+            .attr("class","line")
+            .merge(button_data)
+            .transition()
+            .duration(600)
+            .attr("d", d3.line()
+            .x(function(d) { return x(d.timestamp); })
+            .y(function(d) { return y(d.value); }))
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1.5)
+
+        x.domain(d3.extent(button_records, function(d) { return d.timestamp; }))
+          .range([ 0, width ]);
+	
+        // Add Y axis
+        y.domain([0, d3.max(button_records, function(d) { return +d.value; })])
+          .range([ height, 0 ]);
+
+        xAxis.transition().call(d3.axisBottom(x))
+        yAxis.transition().call(d3.axisLeft(y))
+
+        socket.close();
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+             
+        }
+          
+  
+      // A function that update the chart for given boundaries
+    function updateChart() {
+  
+        extent = d3.event.selection
+
+
+    if(!extent){
+        if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+        x.domain([ 4,8])
+    }else{
+        l = x.invert(extent[0])
+        r = x.invert(extent[1])
+
+        x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+
+        console.log(l+"	"+r);
+
+        timestamp_left = l.getFullYear() +"-"+ pad(l.getMonth()+1) +"-"+ pad(l.getDate()) +" "+ pad(l.getHours()) +":"+ pad(l.getMinutes()) +":"+ pad(l.getSeconds())
+        timestamp_right = r.getFullYear() +"-"+ pad(r.getMonth()+1) +"-"+ pad(r.getDate()) +" "+ pad(r.getHours()) +":"+ pad(r.getMinutes()) +":"+ pad(r.getSeconds())
+
+
+        var json_builder = {"json_id": "7","timestamp_start": timestamp_left,"timestamp_end": timestamp_right,"sensor_id": current_sensor} 
+        new_json = JSON.stringify(json_builder)
+        console.log(new_json)
+        var socket = new WebSocket('ws://127.0.0.1:50093');
+        socket.onopen = function() {console.log('Connected!');
+        socket.send(new_json);};
+        socket.onmessage = function(event) {
+            var new_obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            var new_records = new_obj.result[0].data
+
+            for (r in new_records)
+            { 	
+                new_records[r].timestamp = Date.parse(new_records[r].timestamp)
+	    }
+
+	y.domain([d3.min(new_records, function(d) { return +d.value; }), d3.max(new_records, function(d) { return +d.value; })])
+	    .range([ height, 0 ]);
+
+
+    var u = svga.selectAll(".line")
+        .data([new_records], function(d){ return d.value });
+
+    u
+        .enter()
+        .append("path")
+        .attr("class","line")
+        .merge(u)
+        .transition()
+        .duration(600)
+        .attr("d", d3.line()
+        .x(function(d) { return x(d.timestamp); })
+        .y(function(d) { return y(d.value); }))
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2.0)
+        xAxis.transition().call(d3.axisBottom(x))
+	yAxis.transition().call(d3.axisLeft(y))
+
+                socket.close();
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+        line.select(".brush").call(brush.move, null)        
+        }
+    }      
+        svga.on("dblclick",function(){
+        var socket = new WebSocket('ws://127.0.0.1:50093');
+        socket.onopen = function() {
+            console.log('Connected!');
+        var now = new Date();
+            timestamp_now = now.getFullYear() +"-"+ pad(now.getMonth()+1) +"-"+ pad(now.getDate()) +" "+ pad(now.getHours()) +":"+ pad(now.getMinutes()) +":"+ pad(now.getSeconds())
+        var db_click_json = {"json_id": "7","timestamp_start": "2020-04-08 00:00:00","timestamp_end": timestamp_now,"sensor_id": current_sensor}
+            db_json = JSON.stringify(db_click_json)
+            console.log(db_json);
+
+            socket.send(db_json);
+        };
+        socket.onmessage = function(event) {
+            var obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+            records = obj.result[0].data
+            
+        for (r in records)
+        {	
+            records[r].timestamp = Date.parse(records[r].timestamp)
+        }
+        x.domain(d3.extent(records, function(d) { return d.timestamp; }))
+            .range([ 0, width ]);
+	y.domain([0, d3.max(records, function(d) { return +d.value; })])
+	    .range([ height, 0 ]);
+
+
+    var z = svga.selectAll(".line")
+        .data([records], function(d){ return d.value });
+
+    z
+        .enter()
+        .append("path")
+        .attr("class","line")
+        .merge(z)
+        .transition()
+        .duration(600)
+        .attr("d", d3.line()
+        .x(function(d) { return x(d.timestamp); })
+        .y(function(d) { return y(d.value); }))
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
+        xAxis.transition().call(d3.axisBottom(x))
+	yAxis.transition().call(d3.axisLeft(y))
+
+        socket.close();
+
+
+        };
+        socket.onclose = function() {
+            console.log('Lost connection!');
+        };
+        socket.onerror = function() {
+            console.log('Error!');
+        };
+
+
+        });  
+    }
+}

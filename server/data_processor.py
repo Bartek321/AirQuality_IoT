@@ -34,7 +34,7 @@ def generate_alarms_for_all_sensors():
         generate_alarm_type2_wrapper(1)
         generate_alarm_type2_wrapper(3)
         generate_alarm_type2_wrapper(5)
-        generate_alarm_type2_wrapper(11)
+        generate_alarm_type2_wrapper(13)
         generate_alarm_type2_wrapper(9)
         generate_alarm_type2_wrapper(11)
         time.sleep(200)

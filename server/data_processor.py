@@ -49,7 +49,7 @@ def generate_alarms_for_all_sensors():
         generate_alarm_type2_wrapper(12)
         generate_alarm_type2_wrapper(13)
         generate_alarm_type2_wrapper(14)
-        time.sleep(600)
+        time.sleep(180)
 
 
 def generate_alarm_type2_wrapper(sensor_id):
@@ -117,10 +117,10 @@ def generate_alarm_type2_wrapper(sensor_id):
             generate_alarm_type2(sensor_id, start_time, stop_time, pm1_model_values[0], variation_pm1)
         elif now > today6am and now <= today6pm:
             logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
-            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[1], variation_pm1)
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm1_model_values[1], variation_pm1)
         elif now > today6pm and now <= today2359:
             logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
-            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[2], variation_pm1)
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm1_model_values[2], variation_pm1)
     elif sensor_id == 13 or sensor_id == 14:
         if now > today00 and now <= today6am:
             logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))

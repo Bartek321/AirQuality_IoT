@@ -5,6 +5,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import request_handler
 import time
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 file_handler = RotatingFileHandler('logfile.log', mode='a', maxBytes=50 * 1024 * 1024)
@@ -17,28 +18,38 @@ sensor_limit_min = {}
 sensor_limit_max = {}
 
 variation_temperature = 10
-variation_humidity = 10
-variation_pm25 = 5
-variation_pm1 = 5
-variation_pm10 = 5
+variation_carbon_monoxide = 10
+variation_humidity = 15
+variation_pm25 = 15
+variation_pm1 = 15
+variation_pm10 = 15
+variation_vibration = 10
 # [00:00,6:00,18:00]
-temperature_model_values = [10, 17.5, 19]
-humidity_model_values = [10, 32.9, 28.1]
-pm1_model_values = [10, 20, 6]
-pm10_model_values = [10, 25, 10]
-pm25_model_values = [10, 25, 9]
+#should be 19 instead of 9 in temperature 
+temperature_model_values = [16, 17.5, 9]
+humidity_model_values = [45.7, 32.9, 28.1]
+carbon_monoxide_values = [14.4, 16.43, 13.69]
+pm1_model_values = [9, 20, 6]
+pm10_model_values = [13, 25, 10]
+pm25_model_values = [12, 25, 9]
+vibration_model_values = [1, 4, 6]
+
 
 def generate_alarms_for_all_sensors():
-    
     while True:
         generate_alarm_type2_wrapper(1)
+        generate_alarm_type2_wrapper(2)
         generate_alarm_type2_wrapper(3)
         generate_alarm_type2_wrapper(5)
-        generate_alarm_type2_wrapper(13)
+        generate_alarm_type2_wrapper(6)
+        generate_alarm_type2_wrapper(8)
         generate_alarm_type2_wrapper(9)
+        generate_alarm_type2_wrapper(10)
         generate_alarm_type2_wrapper(11)
-        time.sleep(200)
-
+        generate_alarm_type2_wrapper(12)
+        generate_alarm_type2_wrapper(13)
+        generate_alarm_type2_wrapper(14)
+        time.sleep(600)
 
 
 def generate_alarm_type2_wrapper(sensor_id):
@@ -49,43 +60,103 @@ def generate_alarm_type2_wrapper(sensor_id):
     today2359 = now.replace(hour=23, minute=59, second=59, microsecond=0)
     start_time = now - dt.timedelta(minutes=10)
     stop_time = now
-    logger.info("NOW" + str(now))
-    if now > today00 and now <= today6am:
-        logger.info("od 0:00 do 6:00")
-        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
-    elif now > today6am and now <= today6pm:
-        logger.info("od 6:00 do 18:00")
-        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
-    elif now > today6pm and now <= today2359:
-        logger.info("od 18:00 do 0:00")
-        generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
+
+    if sensor_id == 1 or sensor_id == 2:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[0], variation_temperature)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[1], variation_temperature)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, temperature_model_values[2], variation_temperature)
+    elif sensor_id == 3 or sensor_id == 4:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, carbon_monoxide_values[0], variation_carbon_monoxide)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, carbon_monoxide_values[1], variation_carbon_monoxide)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, carbon_monoxide_values[2], variation_carbon_monoxide)
+    elif sensor_id == 5 or sensor_id == 6:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm25_model_values[0], variation_pm25)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm25_model_values[1], variation_pm25)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm25_model_values[2], variation_pm25)
+    elif sensor_id == 7 or sensor_id == 8:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, vibration_model_values[0], variation_vibration)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, vibration_model_values[1], variation_vibration)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, vibration_model_values[2], variation_vibration)
+    elif sensor_id == 9 or sensor_id == 10:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[0], variation_humidity)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[1], variation_humidity)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[2], variation_humidity)
+    elif sensor_id == 11 or sensor_id == 12:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm1_model_values[0], variation_pm1)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[1], variation_pm1)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, humidity_model_values[2], variation_pm1)
+    elif sensor_id == 13 or sensor_id == 14:
+        if now > today00 and now <= today6am:
+            logger.info("od 0:00 do 6:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm10_model_values[0], variation_pm10)
+        elif now > today6am and now <= today6pm:
+            logger.info("od 6:00 do 18:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm10_model_values[1], variation_pm10)
+        elif now > today6pm and now <= today2359:
+            logger.info("od 18:00 do 0:00 sensor id:" + str(sensor_id))
+            generate_alarm_type2(sensor_id, start_time, stop_time, pm10_model_values[2], variation_pm10)
 
 
 def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variation):
     db = Database()
-    logger.info("SENSOR ID" + str(sensor_id))
     measurements = db.get_sensor_measurements_from_time_period(sensor_id, start_time, stop_time)
     measurements_values = []
-    average = 0
+#   average = 0
 
     for measurement in measurements:
         measurements_values.append(measurement[0])
+        logger.info("measurement_value" + measurement[0])
 
     if len(measurements_values) != 0:
-      for x in measurements_values: 
-        if not isinstance(x, float):                     
-          del measurements_values[x]
-      average = stat.mean(measurements_values)
-      logger.info("MEAN" + str(average))
-      if (model_value - variation) <= average or (model_value + variation >= average):
-          request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
-          logger.info("**********Alarm!!**********")
-          logger.info("Sensor ID: {}".format(sensor_id))
+        for x in measurements_values:
+            if not isinstance(x, float):
+                del measurements_values[x]
+        average = stat.mean(measurements_values)
+        time_delta = start_time - stop_time
+        logger.info("MEAN " + str(average))
+        logger.info("time delta " + time_delta)
+        if (model_value - variation) <= average or (model_value + variation >= average):
+            request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
+            logger.info("**********Alarm!!**********")
     else:
-        logger.info("SLEEP")
-        
+        logger.info("THERE ARE NO MEASUREMENT FROM THIS TIME PERIOD - SLEEP")
 
-   
 
 def get_current_limit_values():
     db = Database()

@@ -17,7 +17,7 @@ logger.addHandler(file_handler)
 sensor_limit_min = {}
 sensor_limit_max = {}
 
-variation_temperature = 10
+variation_temperature = 1
 variation_carbon_monoxide = 10
 variation_humidity = 15
 variation_pm25 = 15
@@ -49,7 +49,7 @@ def generate_alarms_for_all_sensors():
         generate_alarm_type2_wrapper(12)
         generate_alarm_type2_wrapper(13)
         generate_alarm_type2_wrapper(14)
-        time.sleep(180)
+        time.sleep(600)
 
 
 def generate_alarm_type2_wrapper(sensor_id):
@@ -141,7 +141,6 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
 
     for measurement in measurements:
         measurements_values.append(measurement[0])
-        logger.info("measurement_value" + measurement[0])
 
     if len(measurements_values) != 0:
         for x in measurements_values:
@@ -150,10 +149,14 @@ def generate_alarm_type2(sensor_id, start_time, stop_time, model_value, variatio
         average = stat.mean(measurements_values)
         time_delta = start_time - stop_time
         logger.info("MEAN " + str(average))
-        logger.info("time delta " + time_delta)
-        if (model_value - variation) <= average or (model_value + variation >= average):
+        logger.info("MODEL_VALUE " + str(model_value))
+        logger.info("VARIATION " + str(variation))
+        if ((model_value - variation) >= average) or ((model_value + variation) <= average):
             request_handler.add_alarm_to_alarm_stack("ALARM_TYPE_2", sensor_id, stop_time)
             logger.info("**********Alarm!!**********")
+            logger.info("SENSOR ID" + str(sensor_id))
+        else:
+            logger.info("NO ALARM FOR SENSOR " + str(sensor_id))
     else:
         logger.info("THERE ARE NO MEASUREMENT FROM THIS TIME PERIOD - SLEEP")
 

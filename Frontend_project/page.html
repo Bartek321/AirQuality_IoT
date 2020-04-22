@@ -13,17 +13,18 @@
 	<a class="button2" id="buttonb">Konfiguracja</a>
 	<a class="button2" id="dataButton">Dane</a>
 	<a class="button2" id="buttonc">Opcje</a>
-	<a class="button" id="button1">O2</a>-
+	<a class="button" id="button1">O2</a>
 	<a class="button2" id="button2">O3</a>
 	<input class="filetag" type="file" id="filetag"/>
 </div>
 
 <div id="myModal" class="modal">
 
-  <div class="modal-content">
+  <div class="modal-content" id="alarmPop">
     <span class="close">&times;</span>
 	<p id="popupTitle" class="modalTitle">ddd</p>
-    <p id="popupText">ddd.</p>
+    <div id="popupText"></div>
+	
   </div>
 
 </div>
@@ -61,9 +62,10 @@
 		</div>
 	</div>
 	
-	<div class="rowbox">
-		<div class="infobox">
+	<div class="rowbox" id="rowbox">
+		<div class="changebox" id="changebox">
 			<div class="title"><a>Alarmy</a></div>
+			<div id="change2" class="change"></div>
 			<div class="comborow">
 				<!--<label for="combo">Parametr</label>
 				<select class="combo" id="combo2">
@@ -84,6 +86,7 @@
 				<button class="button1" id="resetButton">Reset</button>
 			</div>
 		</div>
+		
 	</div>
 </div>
 </div>
@@ -131,21 +134,21 @@
 	<div class="dataButtonBox">	
 	<a class="button2x" id="sensor_1"  >Temperatura A</a>
 	<a class="button2x" id="sensor_2" type="button" >Wilgotnosc A</a>
-	<a class="button2x" id="sensor_3" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Tlenek wegla A</a>
-	<a class="button2x" id="sensor_4" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje A</a>
-	<a class="button2x" id="sensor_5" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 A</a>
-	<a class="button2x" id="sensor_6" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 A</a>
-	<a class="button2x" id="sensor_7" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 A</a>
+	<a class="button2x" id="sensor_3" type="button" >Tlenek wegla A</a>
+	<a class="button2x" id="sensor_4" type="button" >Wibracje A</a>
+	<a class="button2x" id="sensor_5" type="button" >PM 2.5 A</a>
+	<a class="button2x" id="sensor_6" type="button" >PM 1 A</a>
+	<a class="button2x" id="sensor_7" type="button" >PM 10 A</a>
 	</div>
 	
 	<div class="dataButtonBox">
-	<a class="button2x" id="sensor_8" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px"> Temperatura B</a>
-	<a class="button2x" id="sensor_9" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wilgotnosc B</a>
-	<a class="button2x" id="sensor_10" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px" >Tlenek wegla B</a>
-	<a class="button2x" id="sensor_11" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">Wibracje B</a>
-	<a class="button2x" id="sensor_12" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 2.5 B</a>
-	<a class="button2x" id="sensor_13" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 1 B</a>
-	<a class="button2x" id="sensor_14" type="button" style="color:black; background-color: #C8C8C8; border-radius: 0px">PM 10 B</a>
+	<a class="button2x" id="sensor_8" type="button" > Temperatura B</a>
+	<a class="button2x" id="sensor_9" type="button" >Wilgotnosc B</a>
+	<a class="button2x" id="sensor_10" type="button" >Tlenek wegla B</a>
+	<a class="button2x" id="sensor_11" type="button" >Wibracje B</a>
+	<a class="button2x" id="sensor_12" type="button" >PM 2.5 B</a>
+	<a class="button2x" id="sensor_13" type="button" >PM 1 B</a>
+	<a class="button2x" id="sensor_14" type="button" >PM 10 B</a>
 	</div>
 	<br>
 

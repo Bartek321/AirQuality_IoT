@@ -22,6 +22,9 @@ var isData = false;
 var eleClick = false;
 lst = ["a", "b"];
 
+var oldAlarms = [{station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 2", alarm_type: "ALARM_TYPE_2", name: "Temperatura", alarm_sensor_id: 2, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 1", alarm_type: "HIGH", alarm_sensor_id: 3, name: "Wilgotność", timestamp: "2020-04-22 10:05:09"}];
+var alarms = [{station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"},{station: "Hala 2", alarm_type: "ALARM_TYPE_2", name: "Temperatura", alarm_sensor_id: 2, timestamp: "2020-04-22 10:05:09"}];
+
 var stationID = null;
 // IMAGE CHANGE
 var fileTag = document.getElementById("filetag"),
@@ -368,7 +371,7 @@ function onTitleClick() {
 
 }
 
-var limits = [];
+var limits = [1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10];
 function createData(title) {
 	console.log("datacreate");
 	var temp = getSensorInfo(title);
@@ -396,10 +399,15 @@ function createData(title) {
 		var labelTag2 = document.createElement("div");
 		var labelTag3 = document.createElement("div");
 		labelTag1.appendChild(document.createTextNode(namesDict[temp[i].name]));
-		labelTag1.classList.add("label");
+		labelTag1.classList.add("labelt");
+		
+		var tooltipTag = document.createElement("div");
+		tooltipTag.classList.add("tooltiptext");
+		tooltipTag.innerHTML = "Nazwa: " + temp[i].sensorName + "<br>" + "Id: " + temp[i].sensorID;
+		labelTag1.appendChild(tooltipTag);
+		
 		labelTag2.appendChild(document.createTextNode(temp[i].value));
 		labelTag2.classList.add("label");
-		//labelTag2.style.backgroundColor = "green";
 		
 		if(temp[i].value > temp[i].max || temp[i].value < temp[i].min )
 			labelTag2.style.backgroundColor = "red";
@@ -439,6 +447,7 @@ function createData(title) {
 		tag1.appendChild(rowTag);
 	}
 	if(document.getElementById(0) == null || eleClick == true){
+		limits = [];
 	var tag1 = document.getElementById("change1");
 	tag1.innerHTML = '';
 	document.getElementById('change1').innerHTML = '<div class="inforow"> <div class="label">Nazwa</div><div class="label">Minimum</div><div class="label"></div><div class="label">Maksimum</div></div>';
@@ -474,6 +483,33 @@ function createData(title) {
 		rowTag.appendChild(inputTag2);
 		tag1.appendChild(rowTag);
 	}
+	
+	var tag1 = document.getElementById("change2");
+	tag1.innerHTML = '';
+	document.getElementById('change2').innerHTML = '<div class="inforow"> <div class="label">Stacja</div><div class="label">Czujnik</div><div class="label">Typ</div><div class="label">Czas</div></div>';
+	
+	for(var i = 0; i < oldAlarms.length; i++) {
+		//var info = getSensorInfo1(title, temp[i].sensorID);
+		var rowTag = document.createElement("div");
+		rowTag.classList.add("inforow");
+		var labelTag1 = document.createElement("div");
+		var labelTag2 = document.createElement("div");
+		var labelTag3 = document.createElement("div");
+		var labelTag4 = document.createElement("div");
+		labelTag1.appendChild(document.createTextNode(oldAlarms[i].station));
+		labelTag1.classList.add("label");
+		labelTag2.appendChild(document.createTextNode(oldAlarms[i].name));
+		labelTag2.classList.add("label");
+		labelTag3.appendChild(document.createTextNode(alarmsDict[oldAlarms[i].alarm_type]));
+		labelTag3.classList.add("label");
+		labelTag4.appendChild(document.createTextNode(oldAlarms[i].timestamp));
+		labelTag4.classList.add("label");
+		rowTag.appendChild(labelTag1);
+		rowTag.appendChild(labelTag2);
+		rowTag.appendChild(labelTag3);
+		rowTag.appendChild(labelTag4);
+		tag1.appendChild(rowTag);
+	}
 	}
 	/*if(res == 2)
 		values = [];*/
@@ -489,18 +525,99 @@ function onButtonClickd(title) {
 	searchbar1.style.display = "block";
 	searchbar2.style.display = "none";
 	createData(title);
-	
-	
+}
+
+var alarmDict = {
+	"LOW": "Wartość za niska",
+	"HIGH": "Wartość za wysoka",
+	"ALARM_TYPE_2": "Przekroczono dopuszczalne odchylenie od normy"
+}
+
+var alarmsDict = {
+	"LOW": "Za niska",
+	"HIGH": "Za wysoka",
+	"ALARM_TYPE_2": "Przekroczono odchylenie"
 }
 
 function onButtonClicktest() {
+	var names = [];
+	var s = "    ";
+	var pop = document.getElementById("popupText");
+	//var box = document.getElementById("buttBox");
+	var box = document.createElement("buttBox");
+	box.classList.add("buttonBox3");
+	pop.innerHTML = '';
+	box.innerHTML = '';
+	for(var i = 0; i < alarms.length; i++) {
+		console.log(names.indexOf(alarms[i].station));
+		if(names.indexOf(alarms[i].station) < 0)
+			names.push(alarms[i].station);
+		console.log(names);
+		//console.log(names.indexOf(alarms[i].station));
+	}
+	
 	if(modal.style.display != "block") {
+		var x = document.getElementById("alarmPop");
 		var tlt = document.getElementById("popupTitle");
-		var txt = document.getElementById("popupText");
-		txt.innerHTML = "Wartość została przekroczona!";
-		tlt.innerHTML = "Achtung!";
+		//var txt = document.getElementById("popupText");
+		for(var i = 0; i < names.length; i++) {
+			var stationTxt = document.createElement("p");
+			var txt = document.createElement("p");
+			txt.setAttribute("id", "txt" + i);
+			
+			stationTxt.innerHTML = names[i] + ":";
+			pop.appendChild(stationTxt);
+			pop.appendChild(txt);
+		}
+		
+		for(var i = 0; i < alarms.length; i++) {
+			if(alarms[i].station == names[0]) {
+				var txt = document.getElementById("txt0");
+				txt.innerHTML += alarms[i].timestamp + ": " + s + alarms[i].name + ":   " + alarmDict[alarms[i].alarm_type] + "<br>";
+				//pop.appendChild(stationTxt);
+			}
+			if(alarms[i].station == names[1]) {
+				var txt = document.getElementById("txt1");
+				txt.innerHTML += alarms[i].timestamp + ": " + s + alarms[i].name + ":   " + alarmDict[alarms[i].alarm_type] + "<br>";
+				//pop.appendChild(stationTxt);
+			}
+		}
+		
+		//for(var i = 0; i < names.length; i++) {
+			var b = document.createElement("a");
+			b.classList.add("button2");
+			b.innerHTML = names[0];
+			b.addEventListener("click", onButtonAlarm1);
+			box.appendChild(b);
+			var b1 = document.createElement("a");
+			b1.classList.add("button2");
+			b1.innerHTML = names[1];
+			b1.addEventListener("click", onButtonAlarm2);
+			box.appendChild(b1);
+		//}
+		pop.appendChild(box);
+		x.appendChild(pop);
+		//pop.appendChild(box);
+		tlt.innerHTML = "Wykryto alarm!";
 		modal.style.display = "block";
 	}
+}
+var alNum = 0;
+function onButtonAlarm1(i) {
+	//onEleClick();
+	onButtonClickd(stations[0].title);
+	nam = stations[0].title;
+	console.log("DT " + i);
+	current = 1;
+	modal.style.display = "none";
+}
+function onButtonAlarm2(i) {
+	//onEleClick();
+	onButtonClickd(stations[1].title);
+	console.log("DT " + i);
+	current = 2;
+	modal.style.display = "none";
+	nam  =stations[1].title;
 }
 
 function myTimer(socket) {
@@ -569,7 +686,11 @@ function openSocket() {
 socket.onopen = function () { 
 		temp2 = [];   
 		stations = [];	
-		console.log('Connected!'); 	 		
+		console.log('Connected!'); 	 
+		if(start == true) {
+			onButtonClick2();
+			start = false;
+		}
 	};  
 	
 	socket.onmessage = function (event) {  
@@ -582,6 +703,13 @@ socket.onopen = function () {
 		/*if(values.length == 14) {
 			values.length = 0;
 		}*/
+		
+		if(data.is_alarm == 1) {
+			var alarm = data.alarms;
+			for(var i = 0; i < alarm.length; i++) {
+				
+			}
+		}
 		
 		if(data.json_id == 101)
 			return;
@@ -711,14 +839,17 @@ function onButtonClick2() {
 		//stations = [];	
 		console.log('go!'); 
 		socket.send(' {"json_id": "1"} '); 
+		setTimeout(onButtonClick2, 5000);
    // Do your stuff...
 	} else if (socket.readyState != WebSocket.OPEN && isDrag == false && isData == false) {
 		openSocket();
 		console.log("open");
+		setTimeout(onButtonClick2, 2000);
 	} else {
 		console.log("nic");
+		setTimeout(onButtonClick2, 2000);
 	}
-	setTimeout(onButtonClick2, 10000);
+	//setTimeout(onButtonClick2, 10000);
 	//var temp = [];
 	//stations = [];
 	console.log('bu!'); 
@@ -793,7 +924,7 @@ function onButtonClick() {
 
 function change() {
 }
-
+var start = true;
 var stations1 = [];
 
 function getSensorInfo(name) {
@@ -948,8 +1079,16 @@ function test() {
 	{ 	
  		records[r].timestamp = Date.parse(records[r].timestamp)
 	}
-	console.log("records")
-	console.log(records)
+	first = records[0].timestamp
+	fr = new Date(first)
+	fr = fr.toLocaleDateString();	    	    
+	last = records[records.length - 1].timestamp
+	lr = new Date(last)
+	lr = lr.toLocaleDateString();
+
+	bottom_text = d3.select("#bottom_axis_text")
+	bottom_text.text("Zakres dat: "+fr+" - "+lr)
+
         main(records);
         socket.close();
     };
@@ -975,7 +1114,7 @@ function test() {
       svga.append("text").attr('id', 'bottom_axis_text')             
         .attr("transform", "translate(" + (width/2) + " ," +  (height + margin.top + 25) + ")")
         .style("text-anchor", "middle").style("font-size","20px")
-        .text("Data pomiaru ");
+        .text("Zakres dat: ");
 
 
       svga.append("text").attr('id', 'left_axis_text')
@@ -984,7 +1123,7 @@ function test() {
         .attr("x",0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle").style("font-size","20px")
-        .text("T [°C]"); 
+        .text("Temperatura [ C]"); 
     function pad(n){return n<10 ? '0'+n : n}
     function main(data) {
 
@@ -1079,10 +1218,15 @@ function test() {
         var socket = new WebSocket('ws://127.0.0.1:50093');
         socket.onopen = function() {console.log('Connected!');
         socket.send(new_json);};
+
         socket.onmessage = function(event) {
             var button_obj = JSON.parse(event.data.replace(/\bNaN\b/g, "null"));
+	    console.log(button_obj)
             var button_records = button_obj.result[0].data
-
+	if (button_records.length <= 1) {
+  	    alert("Brak danych dla tego czujnika");
+	} else {
+	    console.log(button_records.length)
             for (r in button_records)
             { 	
                 button_records[r].timestamp = Date.parse(button_records[r].timestamp)
@@ -1187,6 +1331,7 @@ function test() {
         yAxis.transition().call(d3.axisLeft(y))
 
         socket.close();
+	}
         };
         socket.onclose = function() {
             console.log('Lost connection!');

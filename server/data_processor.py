@@ -36,20 +36,20 @@ vibration_model_values = [1, 4, 6]
 
 
 def generate_alarms_for_all_sensors():
-    while True:
-        generate_alarm_type2_wrapper(1)
-        generate_alarm_type2_wrapper(2)
-        generate_alarm_type2_wrapper(3)
-        generate_alarm_type2_wrapper(5)
-        generate_alarm_type2_wrapper(6)
-        generate_alarm_type2_wrapper(8)
-        generate_alarm_type2_wrapper(9)
-        generate_alarm_type2_wrapper(10)
-        generate_alarm_type2_wrapper(11)
-        generate_alarm_type2_wrapper(12)
-        generate_alarm_type2_wrapper(13)
-        generate_alarm_type2_wrapper(14)
-        time.sleep(120)
+
+    generate_alarm_type2_wrapper(1)
+    generate_alarm_type2_wrapper(2)
+    generate_alarm_type2_wrapper(3)
+    generate_alarm_type2_wrapper(5)
+    generate_alarm_type2_wrapper(6)
+    generate_alarm_type2_wrapper(8)
+    generate_alarm_type2_wrapper(9)
+    generate_alarm_type2_wrapper(10)
+    generate_alarm_type2_wrapper(11)
+    generate_alarm_type2_wrapper(12)
+    generate_alarm_type2_wrapper(13)
+    generate_alarm_type2_wrapper(14)
+
 
 
 def generate_alarm_type2_wrapper(sensor_id):

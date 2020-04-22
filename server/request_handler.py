@@ -4,6 +4,7 @@ from datetime import datetime
 import psycopg2
 import logging
 import math
+import time
 from logging.handlers import RotatingFileHandler
 import data_processor
 import Queue
@@ -19,6 +20,7 @@ logger.addHandler(file_handler)
 status_counter = {}
 sensor_status = {}
 
+time_alarm_type_2 = 0
 alarm_stack = Queue.LifoQueue()
 
 
@@ -31,6 +33,8 @@ def initialize_status_counter():
         status_counter[sensor[0]] = 0
     logger.info("Sensor status: {}".format(sensor_status))
     logger.info("Status counter: {}".format(status_counter))
+    global time_alarm_type_2
+    time_alarm_type_2 = time.localtime()
 
 
 def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
@@ -324,6 +328,14 @@ class RequestHandler(object):
 
 
     def handle_alarm_sending_to_application(self):
+        global time_alarm_type_2
+        current_time = time.localtime()
+
+        if current_time - time_alarm_type_2 >= 180:
+            data_processor.generate_alarms_for_all_sensors()
+            time_alarm_type_2 = current_time
+
+
         if alarm_stack.empty():
             self.result["is_alarm"] = 0
         else:

@@ -6,6 +6,8 @@ import logging
 import math
 from logging.handlers import RotatingFileHandler
 import data_processor
+import Queue
+from Queue import Empty
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -17,7 +19,7 @@ logger.addHandler(file_handler)
 status_counter = {}
 sensor_status = {}
 
-alarm_stack = []
+alarm_stack = Queue.LifoQueue()
 
 
 def initialize_status_counter():
@@ -32,7 +34,7 @@ def initialize_status_counter():
 
 
 def add_alarm_to_alarm_stack(alarm_type, sensor_id, timestamp):
-    alarm_stack.append(dict({"alarm_type" : alarm_type,
+    alarm_stack.put(dict({"alarm_type" : alarm_type,
                              "alarm_sensor_id" : sensor_id,
                              "alarm_timestamp" : timestamp,
                              "sent_to_rpi": False }))
@@ -289,8 +291,20 @@ class RequestHandler(object):
                             self.result["alarms"].append(dict({"alarm_type" : dp.alarm_type,
                                                                 "alarm_sensor_id" : req["sensor_id"],
                                                                 "alarm_timestamp" : req["timestamp"]}))
-                    if alarm_stack:
-                        for alarm in alarm_stack:
+                    if not alarm_stack.empty():
+                        #for alarm in alarm_stack:
+                        mycopy = []
+                        while True:
+                            try:
+                                elem = alarm_stack.get(block=False)
+                            except Empty:
+                                break
+                            else:
+                                mycopy.append(elem)
+                        for elem in mycopy:
+                            alarm_stack.put(elem)
+                        for alarm in mycopy:
+                            # do something with the elements
                             if alarm["alarm_type"] == "ALARM_TYPE_2" and alarm["sent_to_rpi"] is False:
                                 self.result["is_alarm"] = 1
                                 if "alarms" not in self.result:
@@ -310,19 +324,20 @@ class RequestHandler(object):
 
 
     def handle_alarm_sending_to_application(self):
-        if not alarm_stack:
+        if alarm_stack.empty():
             self.result["is_alarm"] = 0
         else:
             self.result["is_alarm"] = 1
-            for alarm in alarm_stack:
-                if "alarms" not in self.result:
-                    self.result["alarms"] = []
-
+        #    for alarm in list(alarm_stack.queue):
+            if "alarms" not in self.result:
+                self.result["alarms"] = []
+            while not alarm_stack.empty():
+                alarm = alarm_stack.get()
                 self.result["alarms"].append(dict({"alarm_type": alarm["alarm_type"],
                                                    "alarm_sensor_id": alarm["alarm_sensor_id"],
                                                    "alarm_timestamp": alarm["alarm_timestamp"]}))
 
-                alarm_stack.remove(alarm)
+         #       alarm_stack.get()
 
     def is_number(self, s):
         try:

@@ -22,9 +22,10 @@ var isData = false;
 var eleClick = false;
 lst = ["a", "b"];
 
-var oldAlarms = [{station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 2", alarm_type: "ALARM_TYPE_2", name: "Temperatura", alarm_sensor_id: 2, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 1", alarm_type: "HIGH", alarm_sensor_id: 3, name: "Wilgotność", timestamp: "2020-04-22 10:05:09"}];
-var alarms = [{station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"},{station: "Hala 2", alarm_type: "ALARM_TYPE_2", name: "Temperatura", alarm_sensor_id: 2, timestamp: "2020-04-22 10:05:09"}];
-
+//var oldAlarms = [{station: "Hala 1", alarm_type: "LOW", name: "Temperatura", alarm_sensor_id: 1, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 2", alarm_type: "ALARM_TYPE_2", name: "Temperatura", alarm_sensor_id: 2, timestamp: "2020-04-22 10:05:09"}, {station: "Hala 1", alarm_type: "HIGH", alarm_sensor_id: 3, name: "Wilgotność", timestamp: "2020-04-22 10:05:09"}];
+var alarms = [];
+var alarmsV = [];
+var oldAlarms = [];
 var stationID = null;
 // IMAGE CHANGE
 var fileTag = document.getElementById("filetag"),
@@ -35,6 +36,23 @@ document.getElementById("combo").value = localStorage['size'];
 fileTag.addEventListener("change", function() {
 	changeImage(this);
 });
+
+var idDict = {
+  1: "Temperatura",
+  2: "Temperatura",
+  3: "Tlenek węgla",
+  4: "Tlenek węgla",
+  5: "Pył PM2.5",
+  6: "Pył PM2.5",
+  7: "Wibracje",
+  8: "Wibracje",
+  9: "Wilgotność",
+  10: "Wilgotność",
+  11: "Pył P1",
+  12: "Pył PM1",
+  13: "Pył PM10",
+  14: "Pył PM10"
+};
 
 var namesDict = {
   "temperature": "Temperatura",
@@ -483,7 +501,7 @@ function createData(title) {
 		rowTag.appendChild(inputTag2);
 		tag1.appendChild(rowTag);
 	}
-	
+	}
 	var tag1 = document.getElementById("change2");
 	tag1.innerHTML = '';
 	document.getElementById('change2').innerHTML = '<div class="inforow"> <div class="label">Stacja</div><div class="label">Czujnik</div><div class="label">Typ</div><div class="label">Czas</div></div>';
@@ -510,7 +528,7 @@ function createData(title) {
 		rowTag.appendChild(labelTag4);
 		tag1.appendChild(rowTag);
 	}
-	}
+	
 	/*if(res == 2)
 		values = [];*/
 }
@@ -548,10 +566,12 @@ function onButtonClicktest() {
 	box.classList.add("buttonBox3");
 	pop.innerHTML = '';
 	box.innerHTML = '';
-	for(var i = 0; i < alarms.length; i++) {
-		console.log(names.indexOf(alarms[i].station));
-		if(names.indexOf(alarms[i].station) < 0)
-			names.push(alarms[i].station);
+	console.log("TTT");
+	console.log(alarmsV);
+	for(var i = 0; i < alarmsV.length; i++) {
+		console.log(names.indexOf(alarmsV[i].station));
+		if(names.indexOf(alarmsV[i].station) < 0)
+			names.push(alarmsV[i].station);
 		console.log(names);
 		//console.log(names.indexOf(alarms[i].station));
 	}
@@ -570,15 +590,15 @@ function onButtonClicktest() {
 			pop.appendChild(txt);
 		}
 		
-		for(var i = 0; i < alarms.length; i++) {
-			if(alarms[i].station == names[0]) {
+		for(var i = 0; i < alarmsV.length; i++) {
+			if(alarmsV[i].station == names[0]) {
 				var txt = document.getElementById("txt0");
-				txt.innerHTML += alarms[i].timestamp + ": " + s + alarms[i].name + ":   " + alarmDict[alarms[i].alarm_type] + "<br>";
+				txt.innerHTML += alarmsV[i].timestamp + ": " + s + alarmsV[i].name + ":   " + alarmDict[alarmsV[i].alarm_type] + "<br>";
 				//pop.appendChild(stationTxt);
 			}
-			if(alarms[i].station == names[1]) {
+			if(alarmsV[i].station == names[1]) {
 				var txt = document.getElementById("txt1");
-				txt.innerHTML += alarms[i].timestamp + ": " + s + alarms[i].name + ":   " + alarmDict[alarms[i].alarm_type] + "<br>";
+				txt.innerHTML += alarmsV[i].timestamp + ": " + s + alarmsV[i].name + ":   " + alarmDict[alarmsV[i].alarm_type] + "<br>";
 				//pop.appendChild(stationTxt);
 			}
 		}
@@ -586,21 +606,27 @@ function onButtonClicktest() {
 		//for(var i = 0; i < names.length; i++) {
 			var b = document.createElement("a");
 			b.classList.add("button2");
-			b.innerHTML = names[0];
+			b.innerHTML = localStorage['name1'];
 			b.addEventListener("click", onButtonAlarm1);
 			box.appendChild(b);
+			//if(names[i] != undefined) {
 			var b1 = document.createElement("a");
 			b1.classList.add("button2");
-			b1.innerHTML = names[1];
+			b1.innerHTML = localStorage['name2'];
 			b1.addEventListener("click", onButtonAlarm2);
 			box.appendChild(b1);
+		
 		//}
 		pop.appendChild(box);
 		x.appendChild(pop);
 		//pop.appendChild(box);
 		tlt.innerHTML = "Wykryto alarm!";
 		modal.style.display = "block";
+		//setTimeout(alarmTime, 2000);
+		
 	}
+	alarmsV = [];
+		alarmsV.length = 0;
 }
 var alNum = 0;
 function onButtonAlarm1(i) {
@@ -672,6 +698,12 @@ function dataPack(temp1) {
 		createStations(stations);
 }
 
+//setTimeout(alarmTime, 5000);
+
+function alarmTime() {
+	tout = false;
+}
+var tout = false;
 var y = 0;
 var values = [];
 //var socket = new Object();
@@ -703,12 +735,96 @@ socket.onopen = function () {
 		/*if(values.length == 14) {
 			values.length = 0;
 		}*/
-		
 		if(data.is_alarm == 1) {
 			var alarm = data.alarms;
+			var oldNul = false;
 			for(var i = 0; i < alarm.length; i++) {
-				
+				oldNul = false;
+				for(var j = 0; j < oldAlarms.length; j++) {
+					//console.log("for j: " + j)
+					//if()
+					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
+					var oldAlarmValue = new Date(oldAlarms[j].timestamp).valueOf();
+					if(alarm[i].alarm_sensor_id == oldAlarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > 300000)) {
+						oldNul = false;
+					} else if(alarm[i].alarm_sensor_id == oldAlarms[j].alarm_sensor_id) {
+						oldNul = true;
+						//console.log("for ij: " + i+ " " + j)
+					} 
+				}
+				if(oldNul == false) {
+					//console.log("wpis i: " + i);
+					var stationName = '';
+					if(alarm[i].alarm_sensor_id % 2 == 0)
+						stationName = localStorage['name2'];
+					else 
+						stationName = localStorage['name1'] 
+					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
+					var oldAlarmValue = Date.now().valueOf();
+					if(alarmValue - oldAlarmValue < 5000) {
+					oldAlarms.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
+					}
+				}
 			}
+			if(oldAlarms.length > 9) {
+				for(var i = 0; i < oldAlarms.length - 9; i++) {
+					oldAlarms.shift();
+				}
+			}
+			
+			var oldNul = false;
+			for(var i = 0; i < alarm.length; i++) {
+				oldNul = false;
+				for(var j = 0; j < alarms.length; j++) {
+					//console.log("for j: " + j)
+					//if()
+					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
+					var oldAlarmValue = new Date(alarms[j].timestamp).valueOf();
+					if(alarm[i].alarm_sensor_id == alarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > 300000)) {
+						console.log("hak:" + alarmValue - oldAlarmValue);
+						oldNul = false;
+					} else if(alarm[i].alarm_sensor_id == alarms[j].alarm_sensor_id) {
+						oldNul = true;
+						//console.log("for ij: " + i+ " " + j)
+					} 
+				}
+				if(oldNul == false) {
+					//console.log("wpis i: " + i);
+					var stationName = '';
+					if(alarm[i].alarm_sensor_id % 2 == 0)
+						stationName = localStorage['name2'];
+					else 
+						stationName = localStorage['name1'] 
+					console.log
+					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
+					var oldAlarmValue = Date.now().valueOf();
+					if(alarmValue - oldAlarmValue < 5000) {
+					alarms.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
+					alarmsV.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
+				}
+				}
+			}
+			for(var k = 0; k < alarms.length; k++) {
+				for(var l = 0; l < alarm.length; l++) {
+				var alarmValue = new Date(alarm[l].alarm_timestamp).valueOf();
+				var oldAlarmValue = new Date(alarms[k].timestamp).valueOf();
+				if((alarmValue - oldAlarmValue) > 300000) {
+					alarms.splice(k, 1);
+				}
+				}
+			}
+			
+			if(alarmsV.length > 0) {
+				//setTimeout(alarmTime, 2000);
+				if(tout == false) {
+					tout = true;
+					onButtonClicktest();
+					setTimeout(alarmTime, 2000);
+				}
+				//onButtonClicktest();
+			}
+			
+			
 		}
 		
 		if(data.json_id == 101)
@@ -999,12 +1115,18 @@ var span = document.getElementsByClassName("close")[0];
 
 span.onclick = function() {
   modal.style.display = "none";
+  var tlt = document.getElementById("popupTitle");
+  if(tlt.innerHTML == "Wykryto alarm!")
+	alarmsV = [];
 }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
+	var tlt = document.getElementById("popupTitle");
+	if(tlt.innerHTML == "Wykryto alarm!")
+		alarmsV = [];
   }
 }
 

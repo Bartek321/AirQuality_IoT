@@ -67,7 +67,7 @@ class RequestHandler(object):
     def handle_request(self, request):
         if request["json_id"] == "1":
             self.list_of_sensors_with_limit_value(request)
-            self.handle_alarm_sending_to_application()
+            #self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "2":
             self.time_based_measurements(request)
@@ -91,7 +91,7 @@ class RequestHandler(object):
             self.serialize_result()
         elif request["json_id"] == "7":
             self.get_values_for_dynamic_plot(request)
-            self.handle_alarm_sending_to_application()
+            #self.handle_alarm_sending_to_application()
             self.serialize_result()
         elif request["json_id"] == "101":
             self.update_sensor_limit_min(request)

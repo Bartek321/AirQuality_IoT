@@ -49,7 +49,7 @@ def generate_alarms_for_all_sensors():
         generate_alarm_type2_wrapper(12)
         generate_alarm_type2_wrapper(13)
         generate_alarm_type2_wrapper(14)
-        time.sleep(600)
+        time.sleep(120)
 
 
 def generate_alarm_type2_wrapper(sensor_id):
@@ -58,7 +58,7 @@ def generate_alarm_type2_wrapper(sensor_id):
     today6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
     today00 = now.replace(hour=00, minute=0, second=0, microsecond=0)
     today2359 = now.replace(hour=23, minute=59, second=59, microsecond=0)
-    start_time = now - dt.timedelta(minutes=3)
+    start_time = now - dt.timedelta(minutes=2)
     stop_time = now
 
     if sensor_id == 1 or sensor_id == 2:

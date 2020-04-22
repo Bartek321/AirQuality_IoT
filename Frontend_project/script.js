@@ -10,6 +10,7 @@ document.getElementById("buttonz").addEventListener("click", onButtonClickz);
 document.getElementById("changeButton").addEventListener("click", onChangeClick);
 document.getElementById("resetButton").addEventListener("click", onResetClick);
 document.getElementById("combo").addEventListener("onChange", onChange);
+document.getElementById("timeButton").addEventListener("click", onTimeClick);
 
 var station = [{title:"Hala produkcyjnaa", sensors:[{name:"Temperatura", value:"20.2", unit:"*C", stat:"on"}, {name:"Cisninie", value:"20.2", unit:"*C", stat:"on"}, {name:"Metan", value:"20.2", unit:"*C", stat:"off"} ]}];
 
@@ -32,7 +33,12 @@ var fileTag = document.getElementById("filetag"),
     preview = document.getElementById("preview");
 
 preview.setAttribute('src', "fl.jpg");
-document.getElementById("combo").value = localStorage['size'];
+if(localStorage['size'] == 20)
+	document.getElementById("combo").value = "Mała";
+if(localStorage['size'] == 30)
+	document.getElementById("combo").value = "Średnia";
+if(localStorage['size'] == 40)
+	document.getElementById("combo").value = "Duża";
 fileTag.addEventListener("change", function() {
 	changeImage(this);
 });
@@ -63,6 +69,16 @@ var namesDict = {
   "humidity": "Wilgotność",
   "vibration": "Wibracje"
 };
+
+//document.getElementById("combo").value = localStorage['size'] || "Średnia";
+document.getElementById("timeInput").value = localStorage['time'] || 60000;
+
+function onTimeClick() {
+	var val = document.getElementById("timeInput").value;
+	if(val > 0 && val != undefined && val != null && val != NaN)
+		localStorage['time'] = document.getElementById("timeInput").value;
+	onChange();
+}
 
 function changeImage(input) {
 	var reader;
@@ -546,8 +562,8 @@ function onButtonClickd(title) {
 }
 
 var alarmDict = {
-	"LOW": "Wartość za niska",
-	"HIGH": "Wartość za wysoka",
+	"LOW": "Wartość jest za niska",
+	"HIGH": "Wartość jest za wysoka",
 	"ALARM_TYPE_2": "Przekroczono dopuszczalne odchylenie od normy"
 }
 
@@ -576,13 +592,18 @@ function onButtonClicktest() {
 		//console.log(names.indexOf(alarms[i].station));
 	}
 	
-	if(modal.style.display != "block") {
+	//if(modal.style.display != "block") {
+		if(true){
 		var x = document.getElementById("alarmPop");
+		//var x = document.createElement("div");
+		//x.setAttribute("id", "alarmPop");
+		//x.classList.add("modal-content");
 		var tlt = document.getElementById("popupTitle");
 		//var txt = document.getElementById("popupText");
 		for(var i = 0; i < names.length; i++) {
 			var stationTxt = document.createElement("p");
 			var txt = document.createElement("p");
+			//txt.classList.add("label");
 			txt.setAttribute("id", "txt" + i);
 			
 			stationTxt.innerHTML = names[i] + ":";
@@ -593,12 +614,12 @@ function onButtonClicktest() {
 		for(var i = 0; i < alarmsV.length; i++) {
 			if(alarmsV[i].station == names[0]) {
 				var txt = document.getElementById("txt0");
-				txt.innerHTML += alarmsV[i].timestamp + ": " + s + alarmsV[i].name + ":   " + alarmDict[alarmsV[i].alarm_type] + "<br>";
+				txt.innerHTML += "<b>" + alarmsV[i].name + "</b>" + ":  &ensp; " + alarmDict[alarmsV[i].alarm_type] + " &ensp; Data: " + alarmsV[i].timestamp + "<br>";
 				//pop.appendChild(stationTxt);
 			}
 			if(alarmsV[i].station == names[1]) {
 				var txt = document.getElementById("txt1");
-				txt.innerHTML += alarmsV[i].timestamp + ": " + s + alarmsV[i].name + ":   " + alarmDict[alarmsV[i].alarm_type] + "<br>";
+				txt.innerHTML += "<b>" + alarmsV[i].name + "</b>" + ":  &ensp; " + alarmDict[alarmsV[i].alarm_type] + " &ensp; Data: " + alarmsV[i].timestamp + "<br>";
 				//pop.appendChild(stationTxt);
 			}
 		}
@@ -619,6 +640,7 @@ function onButtonClicktest() {
 		//}
 		pop.appendChild(box);
 		x.appendChild(pop);
+		//modal.appendChild(x);
 		//pop.appendChild(box);
 		tlt.innerHTML = "Wykryto alarm!";
 		modal.style.display = "block";
@@ -745,8 +767,9 @@ socket.onopen = function () {
 					//if()
 					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
 					var oldAlarmValue = new Date(oldAlarms[j].timestamp).valueOf();
-					if(alarm[i].alarm_sensor_id == oldAlarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > 300000)) {
+					if(alarm[i].alarm_sensor_id == oldAlarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > (localStorage['time'] || 60000))) {
 						oldNul = false;
+						//console.log("SRY");
 					} else if(alarm[i].alarm_sensor_id == oldAlarms[j].alarm_sensor_id) {
 						oldNul = true;
 						//console.log("for ij: " + i+ " " + j)
@@ -761,7 +784,7 @@ socket.onopen = function () {
 						stationName = localStorage['name1'] 
 					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
 					var oldAlarmValue = Date.now().valueOf();
-					if(alarmValue - oldAlarmValue < 5000) {
+					if(oldAlarmValue - alarmValue < 1500) {
 					oldAlarms.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
 					}
 				}
@@ -780,7 +803,7 @@ socket.onopen = function () {
 					//if()
 					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
 					var oldAlarmValue = new Date(alarms[j].timestamp).valueOf();
-					if(alarm[i].alarm_sensor_id == alarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > 300000)) {
+					if(alarm[i].alarm_sensor_id == alarms[j].alarm_sensor_id && ((alarmValue - oldAlarmValue) > (localStorage['time'] || 60000))) {
 						console.log("hak:" + alarmValue - oldAlarmValue);
 						oldNul = false;
 					} else if(alarm[i].alarm_sensor_id == alarms[j].alarm_sensor_id) {
@@ -798,7 +821,11 @@ socket.onopen = function () {
 					console.log
 					var alarmValue = new Date(alarm[i].alarm_timestamp).valueOf();
 					var oldAlarmValue = Date.now().valueOf();
-					if(alarmValue - oldAlarmValue < 5000) {
+					console.log("krab");
+					console.log(alarmValue);
+					console.log(oldAlarmValue);
+					console.log(oldAlarmValue - alarmValue);
+					if(oldAlarmValue - alarmValue < 1500) {
 					alarms.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
 					alarmsV.push({alarm_sensor_id: alarm[i].alarm_sensor_id, station: stationName, name: idDict[alarm[i].alarm_sensor_id], timestamp: alarm[i].alarm_timestamp, alarm_type: alarm[i].alarm_type});
 				}
@@ -808,7 +835,7 @@ socket.onopen = function () {
 				for(var l = 0; l < alarm.length; l++) {
 				var alarmValue = new Date(alarm[l].alarm_timestamp).valueOf();
 				var oldAlarmValue = new Date(alarms[k].timestamp).valueOf();
-				if((alarmValue - oldAlarmValue) > 300000) {
+				if((alarmValue - oldAlarmValue) > (localStorage['time'] || 60000)) {
 					alarms.splice(k, 1);
 				}
 				}
@@ -838,7 +865,7 @@ socket.onopen = function () {
 					var txt = document.getElementById("popupText");
 					var tlt = document.getElementById("popupTitle");
 					txt.innerHTML = "Zmiany zostały zapisane!";
-					tlt.innerHTML = "Achtung!";
+					tlt.innerHTML = "Uwaga!!";
 					modal.style.display = "block";
 					//onButtonClick2();
 				}
@@ -855,7 +882,7 @@ socket.onopen = function () {
 					var txt = document.getElementById("popupText");
 					var tlt = document.getElementById("popupTitle");
 					txt.innerHTML = "Zmiany zostały zapisane!";
-					tlt.innerHTML = "Achtung!";
+					tlt.innerHTML = "Uwaga!";
 					modal.style.display = "block";
 				}
 				//onButtonClick2();

@@ -84,7 +84,7 @@ Przykładowa odpowiedź (do odpowiedzi może być dołączona informacja o alarm
     	"alarm_type": "HIGH", 
 	"alarm_timestamp": "2020-04-23 10:35:08.00", 
 	"alarm_sensor_id": 2
-	}]
+	}],
     "result": [{
         "sensor_id": 1, "data": [
             {
@@ -287,7 +287,7 @@ Spodziewana odpowiedź:
 ```json
 {
     "json_id": "103",
-    "result": "OK"
+    "result": "OK",
     "is_alarm": 0
 }
 ```

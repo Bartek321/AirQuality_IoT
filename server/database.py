@@ -49,13 +49,7 @@ class Database(object):
             result = cur.fetchone()
         self.close_connection(conn, cur)
 
-    def insert_example_row(self):
-        conn, cur = self.connect()
-        cur.execute("insert into sensor (id,name,description,location,status) values (101,'test','test101','krakow',false);")
-        conn.commit()
-        self.close_connection(conn, cur)
         
-
     def insert_measurement(self, sensor_id, measurement_type_id, start_time, stop_time, value):
         '''Insert new measurement result into database
             Arguments:
@@ -125,14 +119,7 @@ class Database(object):
         self.close_connection(cur)
         return result
 
-    def get_sensors_by_sensor_id(self, sensor_id):
-        '''
-
-        :param sensor_id:
-        :return: Returns measurement_id, location and status of requested sensor
-        '''
-
-#jm
+#
     def get_sensors_by_status(self, status):
        '''
         :param status: true if sensor is turned on or false if sensor is turned off 
@@ -142,8 +129,6 @@ class Database(object):
        query="SELECT * FROM sensor WHERE status=%s;"
        cur.execute(query,[status])
        result=cur.fetchall()
-       #for row in result:
-       #  print(row)
        self.close_connection(conn,cur)
        return result
  
@@ -156,8 +141,6 @@ class Database(object):
        query="SELECT * FROM sensor WHERE location_x=%s and location_y=%s;"
        cur.execute(query,[location_x,location_y])
        result=cur.fetchall()
-       #for row in result:
-       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -170,21 +153,17 @@ class Database(object):
        query="SELECT id,name,limit_min,limit_max FROM sensor;"
        cur.execute(query)
        result=cur.fetchall()
-       #for row in result:
-       #   print(row)
        self.close_connection(conn,cur)
        return result
 
     def get_sensor_status(self, sensor_id):
        '''
-        Returns list of sensors and their limit values
+        Returns status of the sensor
        '''
        conn, cur = self.connect()
        query="SELECT status FROM sensor WHERE id=%s;"
        cur.execute(query,[sensor_id])
        result=cur.fetchall()
-       #for row in result:
-       #   print(row)
        self.close_connection(conn,cur)
        return result
     
@@ -196,8 +175,6 @@ class Database(object):
        query="SELECT value FROM measurement WHERE sensor_id=%s;"
        cur.execute(query,[sensor_id])
        result=cur.fetchall()
-       #for row in result:
-       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -210,8 +187,6 @@ class Database(object):
        query="SELECT value, time FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
        cur.execute(query,[sensor_id,startTime,stopTime])
        result=cur.fetchall()
-       #for row in result:
-       #   print(row)
        self.close_connection(conn,cur)
        return result
 
@@ -224,8 +199,6 @@ class Database(object):
       query="SELECT avg(value) FROM measurement WHERE sensor_id=%s AND time>= timestamp %s AND time<= timestamp %s;"
       cur.execute(query,[sensor_id,startTime,stopTime])
       result=cur.fetchall()
-      #for row in result:
-      #   print(row)
       self.close_connection(conn,cur)
       return result
 
@@ -250,7 +223,6 @@ class Database(object):
         temp+=measurement_types[i]
       for i in range(1,len(temp)):
           complex_info+=(temp[i],)
-      #print complex_info
       self.close_connection(conn,cur)
       self.close_connection(conn,cur2)
       return complex_info
@@ -263,8 +235,6 @@ class Database(object):
       query="SELECT value, time FROM measurement WHERE sensor_id=%s ORDER BY time DESC LIMIT %s;"
       cur.execute(query,[sensor_id,n])
       result=cur.fetchall()
-      #for row in result:
-      #   print(row)
       self.close_connection(conn,cur)
       return result
 
@@ -277,8 +247,6 @@ class Database(object):
       query="SELECT name,unit FROM measurement_type WHERE id IN (SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s);"
       cur.execute(query,[sensor_id])
       result=cur.fetchall()
-      #for row in result:
-      #   print(sensor_id,row)
       self.close_connection(conn,cur)
       return result
 
@@ -290,8 +258,6 @@ class Database(object):
       query="SELECT measurement_type_id FROM sensor_measurement_type WHERE sensor_id=%s;"
       cur.execute(query,[sensor_id])
       result=cur.fetchall()
-      #for row in result:
-      #   print(sensor_id,row)
       self.close_connection(conn,cur)
       return result
 
@@ -356,7 +322,6 @@ class Database(object):
 #database = Database()
 #database.query()
 #database.get_measurement_type_id(11);
-#database.get_measurement_type_id(13);
 #database.get_measurement_types(3)
 #database.add_new_measurement(5,8,'2020-03-28 15:15:00',100)
 #database.get_n_measurements_from_sensor(1,2)
@@ -364,7 +329,6 @@ class Database(object):
 #database.update_sensor_min_limit(100,1)
 #database.update_sensor_max_limit(100,1)
 #database.get_sensor_and_measurement_types(1)
-#database.get_sensor_and_measurement_types(4)
 #database.get_average(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements_from_time_period(1,'2020-03-14 13:00:00','2020-03-14 15:15:00')
 #database.get_sensor_measurements(1)
@@ -372,6 +336,4 @@ class Database(object):
 #database.get_sensors_by_status('true')
 #database.get_sensors_by_location(10.1,20.2)
 
-#database.get_rows()
-#database.insert_example_row()
 #database.get_rows()

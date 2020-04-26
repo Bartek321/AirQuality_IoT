@@ -1,0 +1,137 @@
+<html>
+<head>
+<!-- biblioteki do wykresow-->
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://unpkg.com/d3-fetch"></script>
+	
+<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>
+<!-- panel nawigacyjny -->
+<div class="tabbar">
+	<a class="button2" id="buttonPage1">Plan</a>
+	<a class="button2" id="buttonPage2">Konfiguracja</a>
+	<a class="button2" id="buttonPage4">Wykresy</a>
+	<a class="button2" id="buttonPage3">Opcje</a>
+</div>
+<!-- okienko z alarmami -->
+<div id="myModal" class="modal">
+    <div class="modal-content" id="alarmPop">
+        <span class="close" id="close">&times;</span>
+	    <p id="popupTitle" class="modalTitle">ddd</p>
+        <div id="popupText"></div>
+    </div>
+</div>
+<!-- strona z planem -->
+<div class="page1" id="page1">
+	<div class="title2"><a>Plan budynku</a></div>
+	<div class="map" id="map">
+		<img class="map2" id="preview">
+		<div id="mapC"></div>
+	</div>
+	<div class="buttonbox1">
+		<button class="button" id="editButton">Edycja</button>
+		<button class="button" id="positionButton">Zatwierdź</button>
+	</div>
+</div>
+<!-- strona z informacjami -->
+<div class="page2" id="page2">
+<input class="title2" id="title2"></input>
+<div class="conf">
+	<div class="rowbox">
+		<div class="infobox" id="infobox">
+			<div class="title"><a>Aktualne wartości</a></div>
+			<div id="info" class="info">
+				<div class="inforow">
+					<div class="label">Nazwa</div>
+					<div class="label">Wartość</div>
+					<div class="label">Jednostka</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="changebox" id="changebox">
+			<div class="title"><a>Limity</a></div>
+			<div id="change" class="change"></div>
+		</div>
+	</div>
+	
+	<div class="rowbox" id="rowbox">
+		<div class="changebox" id="changebox">
+			<div class="title"><a>Alarmy</a></div>
+			<div id="change2" class="change"></div>
+			<div class="comborow">
+			</div>	
+		</div>
+
+		<div class="changebox" id="changebox1">
+			<div class="title"><a>Zmiana limitów</a></div>
+			<div id="change1" class="change1"></div>
+			<div class="buttonbox">
+				<button class="button1" id="changeButton">Zmień</button>
+				<button class="button1" id="resetButton">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<!-- strona z opcjami -->
+<div class="page3" id="page3">
+<div class="title2"><a>Opcje</a></div>
+<div class="conf">
+
+	<div class="optionsbox">
+		<div class="title"><a>Ustawienia</a></div>
+		
+		<div class="comborow">
+			<label for="sizeCombobox">Wielkość ikon stacji&ensp;&ensp;</label>
+			<select class="combo2" id="sizeCombobox">
+				<option value="Mała">Mała</option>
+				<option value="Średnia">Średnia</option>
+				<option value="Duża">Duża</option>
+			</select>
+		</div>
+		
+		<div class="comborow">
+		<label for="timeInput">Czas między alarmami[ms] &ensp;</label>
+			<input class="input10" id="timeInput"></input>
+		</div>
+		<div class="buttonbox2">
+			<button class="button" id="optionButton">Zmień</button>
+			<button class="button">Reset</button>
+		</div>
+	</div>
+</div>
+</div>
+<!-- strona z wykresami -->
+<div class="page4" id="page4">
+    <div id="curve_chart1" class="box">
+	<div id="chartLabel1" class="chartLabel">Hala 1</div>
+	<div class="dataButtonBox">	
+		<a class="button2x" id="sensor_1"  >Temperatura</a>
+		<a class="button2x" id="sensor_2" type="button" >Wilgotnosc</a>
+		<a class="button2x" id="sensor_3" type="button" >Tlenek wegla</a>
+		<a class="button2x" id="sensor_4" type="button" >Wibracje</a>
+		<a class="button2x" id="sensor_5" type="button" >PM 2.5</a>
+		<a class="button2x" id="sensor_6" type="button" >PM 1</a>
+		<a class="button2x" id="sensor_7" type="button" >PM 10</a>
+	</div>
+	<div id="chartLabel2"  class="chartLabel">Hala 2</div>
+	<div class="dataButtonBox">
+		<a class="button2x" id="sensor_8" type="button" > Temperatura</a>
+		<a class="button2x" id="sensor_9" type="button" >Wilgotnosc</a>
+		<a class="button2x" id="sensor_10" type="button" >Tlenek wegla</a>
+		<a class="button2x" id="sensor_11" type="button" >Wibracje</a>
+		<a class="button2x" id="sensor_12" type="button" >PM 2.5</a>
+		<a class="button2x" id="sensor_13" type="button" >PM 1</a>
+		<a class="button2x" id="sensor_14" type="button" >PM 10</a>
+	</div>
+	<br>
+
+	<svg id="svg1" class="svg" width="710px" height="460px" style= """></svg>
+</div>
+	
+</div>
+</body>
+<script src="script.js"></script>
+</html>

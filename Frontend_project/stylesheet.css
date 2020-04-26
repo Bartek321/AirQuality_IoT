@@ -319,7 +319,7 @@ a.button2 {
 }
 
 .combo2 {
-	margin-left: 12px;
+	margin-left: 41px;
 	width: 173px;
 }
 
@@ -616,38 +616,34 @@ a.button2 {
 	font-size: 20px;
 }
 
-
-
 .page4 {
 	display: none;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+}
+
+.center {
+    margin: auto;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
 	
-    * {
-      box-sizing: border-box;
-    }
-
-    .box {
-      display: flex;
-		flex-direction: column;
-
-    }
-    .center {
-      margin: auto;
-    }
-
-
-    .clearfix::after {
-      content: "";
-      clear: both;
-      display: table;
-    }
-	
-	.svg {
-		align-items: center;
+.svg {
+	align-items: center;
     justify-content: center;
 	margin-left: 200px;
-	}
+}
 
 .dataButtonBox {
 	display: flex;
@@ -655,4 +651,12 @@ a.button2 {
 	justify-content: center;
     align-items: center;
 	margin-top: 5px;
+}
+
+.inv {
+	display: none;
+}
+
+.chartLabel {
+	text-align: center;
 }

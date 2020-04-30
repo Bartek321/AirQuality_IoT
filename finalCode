@@ -1,0 +1,203 @@
+#include "DHT.h"
+#include "MQ7.h"
+#include <SoftwareSerial.h>
+
+#define DHTPIN 4
+#define PMS5003R D5
+#define PMS5003T D6
+#define DHTTYPE DHT22
+#define MQ7V 5.0
+
+#define ANALOG_INPUT A0
+
+#define MUX_A D4
+#define MUX_B D3
+#define MUX_C D2
+
+
+SoftwareSerial pmsSerial(PMS5003R, PMS5003T);
+DHT dht(DHTPIN, DHTTYPE);
+MQ7 mq7(ANALOG_INPUT, MQ7V);
+
+float temperature;
+float humidity;
+float CO;
+float vibration;
+float pm_1;
+float pm_2_5;
+float pm_10;
+
+struct pms5003data {
+  uint16_t framelen;
+  uint16_t pm10_standard, pm25_standard, pm100_standard;
+  uint16_t pm10_env, pm25_env, pm100_env;
+  uint16_t particles_03um, particles_05um, particles_10um, particles_25um, particles_50um, particles_100um;
+  uint16_t unused;
+  uint16_t checksum;
+};
+
+struct pms5003data data;
+
+
+void setup() {
+  Serial.begin(9600); 
+  dht.begin();
+  pmsSerial.begin(9600);
+  pinMode(MUX_A, OUTPUT);
+  pinMode(MUX_B, OUTPUT);     
+  pinMode(MUX_C, OUTPUT); 
+  Serial.println("Sensors are ready to collect data");
+}
+
+void loop() 
+{
+  dht22Sensor();
+  pms5003Sensor();
+  changeMux(LOW, LOW, HIGH);
+  mq7Sensor();
+  changeMux(LOW, LOW, LOW);
+  dfr0052Sensor();
+  
+  Serial.print(temperature, 2);
+  Serial.print("\t");
+  Serial.print(humidity, 2);
+  Serial.print("\t");
+  Serial.print(vibration, 2);
+  Serial.print("\t");
+  Serial.print(CO, 2);
+  Serial.print("\t");
+  Serial.print(pm_1, 2);
+  Serial.print("\t");
+  Serial.print(pm_2_5, 2);
+  Serial.print("\t");
+  Serial.print(pm_10, 2);
+  Serial.println('\n');
+}
+
+
+float mq7Sensor()
+{
+    float co = mq7.getPPM();
+//    Serial.print("Carbon monoxide: "); 
+//    Serial.print(co);
+//    Serial.println(" ppm");
+
+    CO = co;
+}
+
+float dht22Sensor()
+{
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Failed to read from DHT sensor");
+  } 
+  else 
+  {
+//    Serial.print("Humidity: "); 
+//    Serial.print(h);
+//    Serial.println(" %");
+//    Serial.print("Temperature: "); 
+//    Serial.print(t);
+//    Serial.println(" *C");
+  }
+  temperature = t;
+  humidity = h;
+}
+
+float dfr0052Sensor()
+{
+      int v;
+      v = analogRead(ANALOG_INPUT);
+
+      if (v < 20){
+        v = 0;
+      }
+//      Serial.print("Vibration: ");
+//      Serial.println(v,DEC);
+
+      vibration = v;
+}
+
+float pms5003Sensor() {
+  if (readPMSdata(&pmsSerial)) {
+//    Serial.print("PM 1.0: ");
+//    Serial.println(data.pm10_standard);
+//    Serial.print("PM 2.5: ");
+//    Serial.println(data.pm25_standard);
+//    Serial.print("PM 10: ");
+//    Serial.println(data.pm100_standard);
+//    Serial.println("\n\n");
+    
+    pm_1 = data.pm10_standard;
+    pm_2_5 = data.pm25_standard;
+    pm_10 = data.pm100_standard;
+  }
+
+  return pm_1, pm_2_5, pm_10;
+}
+
+
+boolean readPMSdata(Stream *s) {
+  if (! s->available()) {
+    return false;
+  }
+  
+  // Read a byte at a time until we get to the special '0x42' start-byte
+  if (s->peek() != 0x42) { //start byte 66
+    s->read();
+    return false;
+  }
+
+  // Now read all 32 bytes
+  if (s->available() < 32) {
+//    Serial.print("less than 32 bytes occurred while reading");
+    return false;
+  }
+    
+  uint8_t buffer[32];    
+  uint16_t sum = 0;
+  s->readBytes(buffer, 32);
+
+  // get checksum ready
+  for (uint8_t i=0; i<30; i++) {
+    sum += buffer[i];
+  }
+
+  /* debugging
+  for (uint8_t i=0; i<32; i++) {
+    Serial.print("0x"); Serial.print(buffer[i], HEX); Serial.print(", ");
+  }
+  Serial.println();
+  */
+  
+  // The data comes in endian, this solves it so it works on all platforms
+  uint16_t buffer_u16[15];
+  for (uint8_t i=0; i<15; i++) {
+    buffer_u16[i] = buffer[2 + i*2 + 1];
+    buffer_u16[i] += (buffer[2 + i*2] << 8);
+  }
+
+  // put it into a struct
+  memcpy((void *)&data, (void *)buffer_u16, 30);
+
+//    Serial.println("CHECKSUM: ");
+//    Serial.print("counted sum: ");
+//    Serial.println(sum);
+//    Serial.print("checksum from sensor: ");
+//    Serial.println(data.checksum);
+
+  if (sum != data.checksum) {
+    Serial.println("Checksum failure");
+    return false;
+  }
+  // success!
+  return true;
+}
+
+void changeMux(int c, int b, int a) {
+  digitalWrite(MUX_A, a);
+  digitalWrite(MUX_B, b);
+  digitalWrite(MUX_C, c);
+}
